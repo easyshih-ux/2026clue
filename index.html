@@ -3,14 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>全班最後試煉｜主題入口</title>
+<title>全班最後試煉｜教師專用入口頁</title>
 <style>
   :root {
-    --bg: #07111b;
-    --panel: rgba(10, 24, 39, 0.82);
-    --text: #eff8ff;
-    --muted: #a9c0cf;
-    --line: rgba(129, 228, 255, 0.2);
+    --bg: #06101a;
+    --panel: rgba(10, 23, 36, 0.84);
+    --panel-soft: rgba(12, 28, 44, 0.72);
+    --text: #eef8ff;
+    --muted: #aac1cf;
+    --line: rgba(127, 227, 255, 0.2);
+    --line-strong: rgba(127, 227, 255, 0.46);
+    --accent: #7ff1ff;
   }
 
   * { box-sizing: border-box; }
@@ -26,22 +29,27 @@
   }
 
   .page {
-    width: min(1180px, 94vw);
+    width: min(1200px, 94vw);
     margin: 0 auto;
-    padding: 44px 0 56px;
+    padding: 38px 0 56px;
+  }
+
+  .hero,
+  .tips,
+  .card {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    box-shadow: 0 24px 44px rgba(0,0,0,0.32);
   }
 
   .hero {
-    padding: 28px;
-    border: 1px solid var(--line);
-    border-radius: 28px;
-    background: var(--panel);
-    box-shadow: 0 24px 44px rgba(0,0,0,0.35);
+    padding: 30px;
+    border-radius: 30px;
     text-align: center;
   }
 
   .eyebrow {
-    color: #80f6ff;
+    color: var(--accent);
     letter-spacing: 3px;
     font-size: 13px;
     font-weight: 900;
@@ -49,43 +57,110 @@
 
   h1 {
     margin: 12px 0 10px;
-    font-size: clamp(34px, 5vw, 64px);
-    line-height: 1.05;
+    font-size: clamp(36px, 5.4vw, 68px);
+    line-height: 1.06;
   }
 
   .hero p {
     margin: 0 auto;
-    max-width: 800px;
+    max-width: 840px;
     color: var(--muted);
-    font-size: clamp(16px, 1.8vw, 22px);
+    font-size: clamp(16px, 1.9vw, 23px);
+    line-height: 1.65;
+  }
+
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+
+  .chip {
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(127, 227, 255, 0.22);
+    background: rgba(255,255,255,0.03);
+    color: #dff6ff;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .tips {
+    margin-top: 18px;
+    padding: 20px 22px;
+    border-radius: 24px;
+    background: var(--panel-soft);
+  }
+
+  .tips-title {
+    margin: 0 0 10px;
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .tip-box {
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(127, 227, 255, 0.12);
+  }
+
+  .tip-box strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+
+  .tip-box span {
+    color: var(--muted);
+    line-height: 1.55;
+    font-size: 14px;
+  }
+
+  .section-title {
+    margin: 24px 0 12px;
+    font-size: clamp(24px, 3vw, 34px);
+    font-weight: 1000;
+  }
+
+  .section-sub {
+    margin: 0 0 16px;
+    color: var(--muted);
     line-height: 1.6;
+    font-size: 16px;
   }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
-    margin-top: 22px;
   }
 
   .card {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    padding: 22px;
+    padding: 24px;
     border-radius: 24px;
     text-decoration: none;
     color: inherit;
-    border: 1px solid var(--line);
-    background: var(--panel);
-    box-shadow: 0 18px 32px rgba(0,0,0,0.28);
     transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
   }
 
   .card:hover {
     transform: translateY(-4px);
-    border-color: rgba(129, 228, 255, 0.48);
-    box-shadow: 0 24px 40px rgba(0,0,0,0.34);
+    border-color: var(--line-strong);
+    box-shadow: 0 26px 44px rgba(0,0,0,0.38);
   }
 
   .tag {
@@ -103,39 +178,95 @@
   .card p {
     margin: 0;
     color: var(--muted);
-    line-height: 1.6;
+    line-height: 1.7;
+  }
+
+  .meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+
+  .pill {
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 13px;
+    font-weight: 800;
   }
 
   .card .cta {
     margin-top: auto;
     font-weight: 900;
+    font-size: 16px;
   }
 
-  .tech { background: linear-gradient(135deg, rgba(9, 31, 68, 0.9), rgba(8, 21, 40, 0.82)); }
-  .lab { background: linear-gradient(135deg, rgba(8, 48, 65, 0.9), rgba(7, 24, 37, 0.82)); }
-  .escape { background: linear-gradient(135deg, rgba(70, 44, 23, 0.92), rgba(39, 25, 14, 0.84)); }
-  .ruins { background: linear-gradient(135deg, rgba(82, 74, 56, 0.92), rgba(48, 42, 33, 0.84)); }
+  .tech { background: linear-gradient(135deg, rgba(9, 31, 68, 0.94), rgba(8, 21, 40, 0.84)); }
+  .lab { background: linear-gradient(135deg, rgba(8, 48, 65, 0.94), rgba(7, 24, 37, 0.84)); }
+  .escape { background: linear-gradient(135deg, rgba(70, 44, 23, 0.94), rgba(39, 25, 14, 0.86)); }
+  .ruins { background: linear-gradient(135deg, rgba(82, 74, 56, 0.94), rgba(48, 42, 33, 0.86)); }
 
-  @media (max-width: 760px) {
-    .page { padding: 24px 0 38px; }
-    .grid { grid-template-columns: 1fr; }
-    .hero, .card { border-radius: 20px; }
+  @media (max-width: 860px) {
+    .tips-grid,
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 22px 0 36px; }
+    .hero, .tips, .card { border-radius: 20px; }
+    .hero { padding: 22px 18px; }
   }
 </style>
 </head>
 <body>
   <div class="page">
     <section class="hero">
-      <div class="eyebrow">FINAL TRIAL THEME SELECTOR</div>
-      <h1>全班最後試煉｜風格入口</h1>
-      <p>四個版本共用同一套拖曳、計時、提示、響鈴與重新開始流程，只切換視覺風格。請直接點選你要使用的主題進入。</p>
+      <div class="eyebrow">TEACHER LAUNCH PANEL</div>
+      <h1>全班最後試煉｜教師專用入口頁</h1>
+      <p>這裡是老師上課時的主控制入口。四個版本共用同一套拖曳、計時、提示、響鈴與重新開始流程，只切換視覺風格。請依班級氣氛與關卡主題，直接選擇想要的畫面版本。</p>
+      <div class="hero-actions">
+        <div class="chip">可自訂答案與提示</div>
+        <div class="chip">保留觸控拖曳</div>
+        <div class="chip">支援大屏投影</div>
+        <div class="chip">答錯不顯示正解</div>
+      </div>
     </section>
+
+    <section class="tips">
+      <div class="tips-title">TEACHER QUICK GUIDE</div>
+      <div class="tips-grid">
+        <div class="tip-box">
+          <strong>1. 先選風格</strong>
+          <span>依照課程主題選擇科技、AI、密室或考古遺跡版本，讓全班氛圍更一致。</span>
+        </div>
+        <div class="tip-box">
+          <strong>2. 再做教師設定</strong>
+          <span>進入後可以自訂答案、提示一到三、標題、副標題與獎勵內容。</span>
+        </div>
+        <div class="tip-box">
+          <strong>3. 上課直接投影</strong>
+          <span>每個版本都保留手動新增字母、拖曳拼字、響鈴提示與重新開始功能。</span>
+        </div>
+      </div>
+    </section>
+
+    <h2 class="section-title">主題選擇</h2>
+    <p class="section-sub">四個版本都能直接使用，差別只在視覺風格。若你想營造壓迫感，建議選科技或 AI；若想帶故事感，建議選密室或考古遺跡。</p>
 
     <section class="grid">
       <a class="card tech" href="./decode-mission-console.html">
         <div class="tag">FUTURE COMMAND</div>
         <h2>未來任務控制台</h2>
         <p>深色霓虹、任務 HUD、發光模組與高科技解碼感，適合最有壓迫感的最後試煉畫面。</p>
+        <div class="meta">
+          <div class="pill">高壓挑戰感</div>
+          <div class="pill">未來科技</div>
+          <div class="pill">任務控制台</div>
+        </div>
         <div class="cta">開啟科技風</div>
       </a>
 
@@ -143,6 +274,11 @@
         <div class="tag">AI LAB</div>
         <h2>AI 實驗室解碼艙</h2>
         <p>偏全息研究站、樣本輸入、AI 提示面板與玻璃化研究艙，像在進行最終資料解碼。</p>
+        <div class="meta">
+          <div class="pill">全息研究站</div>
+          <div class="pill">AI 氛圍</div>
+          <div class="pill">解碼艙</div>
+        </div>
         <div class="cta">開啟 AI 實驗室風</div>
       </a>
 
@@ -150,6 +286,11 @@
         <div class="tag">ESCAPE ROOM</div>
         <h2>密室逃脫解謎風</h2>
         <p>暗木色、羊皮紙、黃銅機關與寶箱任務氛圍，像全班正在破解最後密室。</p>
+        <div class="meta">
+          <div class="pill">故事感強</div>
+          <div class="pill">寶箱任務</div>
+          <div class="pill">密室氛圍</div>
+        </div>
         <div class="cta">開啟密室風</div>
       </a>
 
@@ -157,6 +298,11 @@
         <div class="tag">ANCIENT RUINS</div>
         <h2>考古遺跡解封風</h2>
         <p>石板、符文、古文明機關與遺跡石門，像在解讀最後一座封印遺址。</p>
+        <div class="meta">
+          <div class="pill">考古探險</div>
+          <div class="pill">符文機關</div>
+          <div class="pill">古文明解封</div>
+        </div>
         <div class="cta">開啟考古遺跡風</div>
       </a>
     </section>
