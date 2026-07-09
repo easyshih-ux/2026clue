@@ -3,1325 +3,163 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>全班最後試煉｜自訂字母合體</title>
+<title>全班最後試煉｜主題入口</title>
 <style>
   :root {
-    --bg: #07111f;
-    --bg-2: #0b1730;
-    --panel: rgba(11, 22, 46, 0.72);
-    --panel-strong: rgba(10, 20, 43, 0.9);
-    --glass: rgba(122, 214, 255, 0.1);
-    --line: rgba(116, 224, 255, 0.38);
-    --line-strong: rgba(79, 246, 184, 0.7);
-    --text: #ebf7ff;
-    --muted: #8fb4cc;
-    --cyan: #64f2ff;
-    --blue: #37a4ff;
-    --purple: #9f6dff;
-    --green: #7dffb2;
-    --lime: #c8ff61;
-    --danger: #ff708b;
-    --shadow: 0 0 0 1px rgba(130, 221, 255, 0.14), 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 28px rgba(55, 164, 255, 0.12);
+    --bg: #07111b;
+    --panel: rgba(10, 24, 39, 0.82);
+    --text: #eff8ff;
+    --muted: #a9c0cf;
+    --line: rgba(129, 228, 255, 0.2);
   }
 
-  * {
-    box-sizing: border-box;
-  }
-
-  html, body {
-    min-height: 100%;
-  }
+  * { box-sizing: border-box; }
 
   body {
     margin: 0;
-    font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+    min-height: 100vh;
+    font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
     color: var(--text);
     background:
-      radial-gradient(circle at top, rgba(63, 90, 255, 0.18), transparent 30%),
-      radial-gradient(circle at 85% 15%, rgba(0, 255, 255, 0.12), transparent 22%),
-      radial-gradient(circle at 20% 80%, rgba(159, 109, 255, 0.16), transparent 24%),
-      linear-gradient(180deg, #040812 0%, var(--bg) 50%, #03060d 100%);
-    overflow-x: hidden;
-  }
-
-  body::before,
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  body::before {
-    background:
-      linear-gradient(rgba(100, 242, 255, 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(100, 242, 255, 0.08) 1px, transparent 1px);
-    background-size: 44px 44px;
-    mask-image: linear-gradient(180deg, rgba(255,255,255,0.65), transparent 92%);
-  }
-
-  body::after {
-    background:
-      linear-gradient(120deg, transparent 0 47%, rgba(125, 255, 178, 0.06) 49%, transparent 51%),
-      linear-gradient(300deg, transparent 0 47%, rgba(159, 109, 255, 0.05) 49%, transparent 51%);
-    opacity: 0.65;
+      radial-gradient(circle at top, rgba(100, 205, 255, 0.18), transparent 24%),
+      linear-gradient(180deg, #04080f 0%, #07111b 50%, #03060b 100%);
   }
 
   .page {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    min-height: 100vh;
-    padding: 26px 18px 38px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
+    width: min(1180px, 94vw);
+    margin: 0 auto;
+    padding: 44px 0 56px;
   }
 
-  .setup-panel,
-  .utility-bar,
-  .top-bar,
-  .hint-box,
-  .letter-bank,
-  .result-card {
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-  }
-
-  .setup-panel {
-    width: min(1260px, 97vw);
-    position: relative;
-    padding: 22px;
-    border-radius: 28px;
-    background:
-      linear-gradient(135deg, rgba(8, 18, 40, 0.92), rgba(6, 13, 29, 0.78)),
-      linear-gradient(135deg, rgba(100, 242, 255, 0.07), rgba(159, 109, 255, 0.04));
+  .hero {
+    padding: 28px;
     border: 1px solid var(--line);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-  }
-
-  .setup-panel::before,
-  .hint-box::before,
-  .letter-bank::before,
-  .result-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(100, 242, 255, 0.7), rgba(159, 109, 255, 0.5), rgba(125, 255, 178, 0.55));
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  .setup-panel::after {
-    content: "SYSTEM CONFIG";
-    position: absolute;
-    top: 14px;
-    right: 18px;
-    color: rgba(125, 255, 178, 0.85);
-    font-size: 12px;
-    letter-spacing: 2px;
-    font-weight: 900;
-  }
-
-  .setup-title {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-  }
-
-  .title-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    border-radius: 28px;
+    background: var(--panel);
+    box-shadow: 0 24px 44px rgba(0,0,0,0.35);
+    text-align: center;
   }
 
   .eyebrow {
-    color: var(--green);
+    color: #80f6ff;
+    letter-spacing: 3px;
     font-size: 13px;
-    letter-spacing: 2px;
     font-weight: 900;
-  }
-
-  .setup-heading {
-    font-size: clamp(24px, 2.6vw, 38px);
-    font-weight: 1000;
-    line-height: 1.15;
-    text-shadow: 0 0 16px rgba(55, 164, 255, 0.25);
-  }
-
-  .setup-sub {
-    color: var(--muted);
-    font-size: clamp(14px, 1.25vw, 18px);
-    font-weight: 700;
-  }
-
-  .setup-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-  }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 14px;
-    border-radius: 20px;
-    background: linear-gradient(180deg, rgba(18, 34, 67, 0.7), rgba(11, 21, 41, 0.52));
-    border: 1px solid rgba(100, 242, 255, 0.18);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
-  }
-
-  .field.full {
-    grid-column: 1 / -1;
-  }
-
-  label {
-    font-size: clamp(14px, 1.2vw, 18px);
-    font-weight: 900;
-    color: #ddf5ff;
-  }
-
-  input {
-    width: 100%;
-    border: 1px solid rgba(100, 242, 255, 0.35);
-    border-radius: 16px;
-    padding: 12px 14px;
-    font-size: clamp(16px, 1.55vw, 22px);
-    font-weight: 800;
-    font-family: inherit;
-    color: var(--text);
-    background: rgba(3, 10, 24, 0.74);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 0 18px rgba(0,0,0,0.18);
-  }
-
-  input:focus {
-    outline: none;
-    border-color: var(--green);
-    box-shadow: 0 0 0 2px rgba(125, 255, 178, 0.2), 0 0 24px rgba(100, 242, 255, 0.14);
-  }
-
-  input::placeholder {
-    color: rgba(143, 180, 204, 0.75);
-  }
-
-  .hint-preview {
-    font-size: clamp(13px, 1.1vw, 16px);
-    color: var(--muted);
-    font-weight: 700;
-    line-height: 1.45;
-  }
-
-  .utility-bar {
-    width: min(1260px, 97vw);
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 14px;
-  }
-
-  .teacher-panel,
-  .right-tools {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 16px 18px;
-    border-radius: 22px;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    box-shadow: var(--shadow);
-  }
-
-  .teacher-panel::before,
-  .right-tools::before {
-    content: attr(data-label);
-    color: var(--cyan);
-    font-size: 12px;
-    letter-spacing: 2px;
-    font-weight: 900;
-    margin-right: 4px;
-  }
-
-  .teacher-label {
-    font-size: clamp(16px, 1.55vw, 22px);
-    font-weight: 1000;
-    padding: 10px 14px;
-    color: var(--text);
-    border-radius: 16px;
-    background: linear-gradient(135deg, rgba(55, 164, 255, 0.16), rgba(125, 255, 178, 0.12));
-    border: 1px solid rgba(100, 242, 255, 0.25);
-  }
-
-  .teacher-input {
-    width: 120px;
-    text-align: center;
-    text-transform: uppercase;
-  }
-
-  .right-tools {
-    justify-content: flex-end;
   }
 
   h1 {
-    margin: 10px 0 0;
-    text-align: center;
-    font-size: clamp(40px, 5vw, 82px);
-    letter-spacing: 4px;
-    font-weight: 1000;
-    line-height: 1.04;
-    text-shadow:
-      0 0 12px rgba(55, 164, 255, 0.38),
-      0 0 34px rgba(159, 109, 255, 0.18);
+    margin: 12px 0 10px;
+    font-size: clamp(34px, 5vw, 64px);
+    line-height: 1.05;
   }
 
-  .subtitle {
-    max-width: 1080px;
-    text-align: center;
-    font-size: clamp(18px, 2vw, 30px);
-    color: #b6d4eb;
-    font-weight: 800;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
+  .hero p {
+    margin: 0 auto;
+    max-width: 800px;
+    color: var(--muted);
+    font-size: clamp(16px, 1.8vw, 22px);
+    line-height: 1.6;
   }
 
-  .top-bar {
-    width: min(1260px, 97vw);
+  .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1.15fr;
-    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 22px;
   }
 
-  .timer,
-  .prize,
-  .count-box {
-    position: relative;
-    padding: 18px 20px;
-    border-radius: 24px;
-    border: 1px solid rgba(100, 242, 255, 0.28);
-    background: linear-gradient(180deg, rgba(9, 20, 42, 0.88), rgba(8, 16, 34, 0.72));
-    box-shadow: var(--shadow);
+  .card {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 8px;
-    min-height: 118px;
-    overflow: hidden;
-  }
-
-  .timer::before,
-  .prize::before,
-  .count-box::before {
-    content: attr(data-label);
-    color: var(--green);
-    font-size: 12px;
-    letter-spacing: 2px;
-    font-weight: 900;
-  }
-
-  .timer {
-    color: var(--cyan);
-    font-size: clamp(22px, 2.6vw, 40px);
-    font-weight: 1000;
-  }
-
-  .timer-inline {
-    display: inline-flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-    white-space: nowrap;
-    line-height: 1;
-  }
-
-  .timer-inline #time {
-    font-size: clamp(42px, 5.1vw, 78px);
-    letter-spacing: 2px;
-  }
-
-  .count-box {
-    color: #f1fdff;
-    font-size: clamp(20px, 2.2vw, 34px);
-    font-weight: 1000;
-  }
-
-  .count-inline {
-    display: inline-flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: nowrap;
-    white-space: nowrap;
-    line-height: 1;
-  }
-
-  .prize {
-    color: #fff;
-    font-size: clamp(18px, 2vw, 31px);
-    font-weight: 1000;
-    transition: background 0.3s ease, transform 0.25s ease, box-shadow 0.3s ease;
-  }
-
-  .prize.tier1 {
-    background: linear-gradient(135deg, rgba(8, 24, 54, 0.94), rgba(6, 33, 72, 0.86));
-    box-shadow: var(--shadow), 0 0 26px rgba(55, 164, 255, 0.24);
-  }
-
-  .prize.tier2 {
-    background: linear-gradient(135deg, rgba(18, 17, 60, 0.96), rgba(49, 19, 109, 0.86));
-    box-shadow: var(--shadow), 0 0 26px rgba(159, 109, 255, 0.26);
-  }
-
-  .prize.tier3 {
-    background: linear-gradient(135deg, rgba(5, 44, 45, 0.96), rgba(10, 79, 63, 0.86));
-    box-shadow: var(--shadow), 0 0 26px rgba(125, 255, 178, 0.2);
-  }
-
-  .prize.tier4 {
-    background: linear-gradient(135deg, rgba(38, 15, 73, 0.94), rgba(7, 64, 76, 0.86));
-    box-shadow: var(--shadow), 0 0 26px rgba(200, 255, 97, 0.18);
-  }
-
-  .hint-box {
-    width: min(1260px, 97vw);
-    min-height: 96px;
-    position: relative;
-    padding: 22px 24px;
-    border-radius: 24px;
-    background: linear-gradient(135deg, rgba(8, 20, 43, 0.88), rgba(8, 18, 34, 0.76));
-    border: 1px solid rgba(125, 255, 178, 0.32);
-    box-shadow: var(--shadow);
-    font-size: clamp(18px, 1.95vw, 30px);
-    font-weight: 900;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1.45;
-    transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
-    overflow: hidden;
-  }
-
-  .hint-box::after {
-    content: "SYSTEM HINT";
-    position: absolute;
-    top: 12px;
-    left: 18px;
-    font-size: 12px;
-    letter-spacing: 2px;
-    color: var(--lime);
-    font-weight: 900;
-  }
-
-  .hint-box.flash {
-    background: linear-gradient(135deg, rgba(15, 56, 66, 0.96), rgba(17, 28, 58, 0.84));
-    box-shadow: var(--shadow), 0 0 26px rgba(125, 255, 178, 0.26);
-    transform: scale(1.01);
-  }
-
-  .slots {
-    width: min(1320px, 98vw);
-    display: grid;
-    gap: 10px;
-    margin: 4px 0 6px;
-  }
-
-  .slot {
-    height: clamp(66px, 7.2vw, 106px);
-    position: relative;
-    border-radius: 18px;
-    background:
-      linear-gradient(180deg, rgba(11, 27, 54, 0.94), rgba(8, 15, 32, 0.9)),
-      rgba(255,255,255,0.02);
-    border: 1px solid rgba(100, 242, 255, 0.28);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: inset 0 0 22px rgba(55, 164, 255, 0.08), 0 10px 22px rgba(0,0,0,0.24);
-  }
-
-  .slot::after {
-    content: "";
-    position: absolute;
-    inset: 8px;
-    border-radius: 12px;
-    border: 1px dashed rgba(100, 242, 255, 0.2);
-    pointer-events: none;
-  }
-
-  .slot.over,
-  .letter-bank.over {
-    background: linear-gradient(135deg, rgba(11, 58, 78, 0.95), rgba(32, 24, 78, 0.88));
-    box-shadow: 0 0 0 1px rgba(125, 255, 178, 0.7), 0 0 28px rgba(100, 242, 255, 0.24);
-    transform: scale(1.01);
-  }
-
-  .letter-bank {
-    width: min(1200px, 97vw);
-    min-height: 160px;
-    position: relative;
-    padding: 28px 18px 18px;
-    border-radius: 28px;
-    background: linear-gradient(180deg, rgba(9, 20, 41, 0.9), rgba(6, 14, 30, 0.72));
-    border: 1px solid rgba(100, 242, 255, 0.24);
-    display: flex;
-    flex-wrap: wrap;
     gap: 14px;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 10px;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    overflow: hidden;
+    padding: 22px;
+    border-radius: 24px;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    box-shadow: 0 18px 32px rgba(0,0,0,0.28);
+    transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
   }
 
-  .letter-bank::after {
-    content: "LETTER BANK";
-    position: absolute;
-    top: 12px;
-    left: 18px;
-    color: var(--cyan);
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(129, 228, 255, 0.48);
+    box-shadow: 0 24px 40px rgba(0,0,0,0.34);
+  }
+
+  .tag {
     font-size: 12px;
-    letter-spacing: 2px;
     font-weight: 900;
+    letter-spacing: 2px;
+    opacity: 0.9;
   }
 
-  .letter {
-    width: clamp(62px, 6.4vw, 94px);
-    height: clamp(62px, 6.4vw, 94px);
-    position: relative;
-    border-radius: 20px;
-    border: 1px solid rgba(100, 242, 255, 0.5);
-    background:
-      linear-gradient(145deg, rgba(8, 34, 58, 0.98), rgba(16, 58, 94, 0.82) 55%, rgba(106, 255, 193, 0.22)),
-      linear-gradient(145deg, rgba(159, 109, 255, 0.2), rgba(55, 164, 255, 0.16));
-    color: #f5fdff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(34px, 4.3vw, 58px);
-    font-weight: 1000;
-    cursor: grab;
-    user-select: none;
-    touch-action: none;
-    box-shadow:
-      0 14px 24px rgba(0, 0, 0, 0.28),
-      inset 0 0 18px rgba(100, 242, 255, 0.15),
-      0 0 18px rgba(55, 164, 255, 0.16);
-    text-shadow: 0 0 16px rgba(100, 242, 255, 0.24);
+  .card h2 {
+    margin: 0;
+    font-size: clamp(24px, 2.6vw, 34px);
   }
 
-  .letter::after {
-    content: "";
-    position: absolute;
-    inset: 6px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .letter:active {
-    cursor: grabbing;
-  }
-
-  .main-controls {
-    display: flex;
-    justify-content: center;
-    margin-top: 2px;
-  }
-
-  .side-btn,
-  .check-btn,
-  .result button {
-    border: 1px solid rgba(100, 242, 255, 0.35);
-    border-radius: 999px;
-    font-weight: 1000;
-    cursor: pointer;
-    color: #f5fdff;
-    font-family: inherit;
-    transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-  }
-
-  .side-btn {
-    padding: 11px 18px;
-    font-size: clamp(15px, 1.4vw, 20px);
-    background: linear-gradient(135deg, rgba(14, 31, 59, 0.96), rgba(12, 23, 43, 0.84));
-    box-shadow: 0 8px 18px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(255,255,255,0.03);
-  }
-
-  .side-btn.config { border-color: rgba(100, 242, 255, 0.35); }
-  .side-btn.save { border-color: rgba(125, 255, 178, 0.45); box-shadow: 0 0 20px rgba(125, 255, 178, 0.12); }
-  .side-btn.add { border-color: rgba(100, 242, 255, 0.45); box-shadow: 0 0 20px rgba(55, 164, 255, 0.16); }
-  .side-btn.undo { border-color: rgba(159, 109, 255, 0.42); box-shadow: 0 0 20px rgba(159, 109, 255, 0.14); }
-  .side-btn.start { border-color: rgba(200, 255, 97, 0.5); box-shadow: 0 0 20px rgba(200, 255, 97, 0.14); }
-  .side-btn.reset { border-color: rgba(255, 112, 139, 0.42); box-shadow: 0 0 20px rgba(255, 112, 139, 0.1); }
-
-  .check-btn {
-    padding: 16px 40px;
-    font-size: clamp(22px, 2.4vw, 34px);
-    background: linear-gradient(135deg, rgba(10, 70, 72, 0.95), rgba(26, 38, 97, 0.86));
-    border-color: rgba(125, 255, 178, 0.48);
-    box-shadow: 0 14px 28px rgba(0,0,0,0.28), 0 0 24px rgba(100, 242, 255, 0.16);
-    letter-spacing: 1px;
-  }
-
-  .side-btn:hover,
-  .check-btn:hover,
-  .result button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 14px 28px rgba(0,0,0,0.24), 0 0 24px rgba(100, 242, 255, 0.16);
-  }
-
-  .side-btn:active,
-  .check-btn:active,
-  .result button:active {
-    transform: translateY(2px);
-  }
-
-  .side-btn:disabled {
-    opacity: 0.42;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-
-  .small-note {
-    width: min(1160px, 94vw);
-    padding: 14px 18px;
-    border-radius: 18px;
-    background: rgba(10, 20, 41, 0.66);
-    border: 1px solid rgba(100, 242, 255, 0.18);
+  .card p {
+    margin: 0;
     color: var(--muted);
-    margin-top: 2px;
-    font-size: clamp(14px, 1.2vw, 17px);
-    font-weight: 700;
-    text-align: center;
-    line-height: 1.55;
+    line-height: 1.6;
   }
 
-  .result {
-    position: fixed;
-    inset: 0;
-    background: rgba(2, 7, 19, 0.72);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    z-index: 10;
-  }
-
-  .result-card {
-    width: min(920px, 94vw);
-    position: relative;
-    background: linear-gradient(180deg, rgba(8, 19, 41, 0.96), rgba(7, 15, 31, 0.92));
-    border: 1px solid rgba(100, 242, 255, 0.3);
-    border-radius: 36px;
-    padding: 40px 30px 30px;
-    text-align: center;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.48), 0 0 40px rgba(55, 164, 255, 0.14);
-    overflow: hidden;
-  }
-
-  .result-card::after {
-    content: "MISSION STATUS";
-    position: absolute;
-    top: 16px;
-    left: 24px;
-    color: var(--cyan);
-    font-size: 12px;
-    letter-spacing: 2px;
+  .card .cta {
+    margin-top: auto;
     font-weight: 900;
   }
 
-  .result-card h2 {
-    font-size: clamp(40px, 5vw, 74px);
-    margin: 8px 0 10px;
-    text-shadow: 0 0 18px rgba(100, 242, 255, 0.16);
-  }
+  .tech { background: linear-gradient(135deg, rgba(9, 31, 68, 0.9), rgba(8, 21, 40, 0.82)); }
+  .lab { background: linear-gradient(135deg, rgba(8, 48, 65, 0.9), rgba(7, 24, 37, 0.82)); }
+  .escape { background: linear-gradient(135deg, rgba(70, 44, 23, 0.92), rgba(39, 25, 14, 0.84)); }
+  .ruins { background: linear-gradient(135deg, rgba(82, 74, 56, 0.92), rgba(48, 42, 33, 0.84)); }
 
-  .result-card p {
-    font-size: clamp(24px, 3vw, 42px);
-    font-weight: 1000;
-    margin: 10px 0 16px;
-    line-height: 1.35;
-  }
-
-  .answer {
-    font-size: clamp(32px, 4.6vw, 64px);
-    font-weight: 1000;
-    letter-spacing: 5px;
-    margin: 18px 0;
-    word-break: break-word;
-    color: var(--green);
-    text-shadow: 0 0 18px rgba(125, 255, 178, 0.24);
-  }
-
-  .wrong {
-    border-color: rgba(255, 112, 139, 0.42);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.48), 0 0 40px rgba(255, 112, 139, 0.14);
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  @media (max-width: 980px) {
-    .setup-grid,
-    .utility-bar,
-    .top-bar {
-      grid-template-columns: 1fr;
-    }
-
-    .right-tools {
-      justify-content: flex-start;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .page {
-      padding: 18px 12px 30px;
-    }
-
-    .setup-panel,
-    .teacher-panel,
-    .right-tools,
-    .timer,
-    .prize,
-    .count-box,
-    .hint-box,
-    .letter-bank,
-    .small-note {
-      border-radius: 20px;
-    }
-
-    .setup-title {
-      align-items: stretch;
-    }
-
-    .side-btn,
-    .check-btn {
-      width: 100%;
-      justify-content: center;
-    }
-
-    .teacher-input {
-      width: 100%;
-    }
+  @media (max-width: 760px) {
+    .page { padding: 24px 0 38px; }
+    .grid { grid-template-columns: 1fr; }
+    .hero, .card { border-radius: 20px; }
   }
 </style>
 </head>
 <body>
-<div class="page">
-  <div class="setup-panel" id="setupPanel">
-    <div class="setup-title">
-      <div class="title-stack">
-        <div class="eyebrow">SYSTEM CONFIG</div>
-        <div class="setup-heading">教師設定區｜解碼任務參數控制台</div>
-        <div class="setup-sub">可自訂答案、提示與獎勵，不改變原本挑戰流程。</div>
-      </div>
-      <button class="side-btn save" onclick="applySettings()">套用設定</button>
-    </div>
+  <div class="page">
+    <section class="hero">
+      <div class="eyebrow">FINAL TRIAL THEME SELECTOR</div>
+      <h1>全班最後試煉｜風格入口</h1>
+      <p>四個版本共用同一套拖曳、計時、提示、響鈴與重新開始流程，只切換視覺風格。請直接點選你要使用的主題進入。</p>
+    </section>
 
-    <div class="setup-grid">
-      <div class="field full">
-        <label for="answerInput">正確答案｜請輸入英文單字，系統會自動計算字母數</label>
-        <input id="answerInput" value="BRAINSTORMING" placeholder="例如：BRAINSTORMING" autocomplete="off" />
-        <div class="hint-preview" id="answerPreview">目前答案字母數：13</div>
-      </div>
+    <section class="grid">
+      <a class="card tech" href="./decode-mission-console.html">
+        <div class="tag">FUTURE COMMAND</div>
+        <h2>未來任務控制台</h2>
+        <p>深色霓虹、任務 HUD、發光模組與高科技解碼感，適合最有壓迫感的最後試煉畫面。</p>
+        <div class="cta">開啟科技風</div>
+      </a>
 
-      <div class="field">
-        <label for="hint1Input">提示一｜1:00 出現</label>
-        <input id="hint1Input" value='提示一：第一個字母是 "B"。' />
-      </div>
+      <a class="card lab" href="./ai-lab-decode-station.html">
+        <div class="tag">AI LAB</div>
+        <h2>AI 實驗室解碼艙</h2>
+        <p>偏全息研究站、樣本輸入、AI 提示面板與玻璃化研究艙，像在進行最終資料解碼。</p>
+        <div class="cta">開啟 AI 實驗室風</div>
+      </a>
 
-      <div class="field">
-        <label for="hint2Input">提示二｜3:00 出現</label>
-        <input id="hint2Input" value='提示二：最後一個字母是 "G"。' />
-      </div>
+      <a class="card escape" href="./escape-room-mission.html">
+        <div class="tag">ESCAPE ROOM</div>
+        <h2>密室逃脫解謎風</h2>
+        <p>暗木色、羊皮紙、黃銅機關與寶箱任務氛圍，像全班正在破解最後密室。</p>
+        <div class="cta">開啟密室風</div>
+      </a>
 
-      <div class="field">
-        <label for="hint3Input">提示三｜5:00 出現</label>
-        <input id="hint3Input" value="提示三：這個單字拆成兩段理解，前 5 個字母＋後 8 個字母。" />
-      </div>
-
-      <div class="field">
-        <label for="titleInput">主標題</label>
-        <input id="titleInput" value="全班最後試煉" />
-      </div>
-
-      <div class="field">
-        <label for="subtitleInput">副標題｜避免破題可保持模糊</label>
-        <input id="subtitleInput" value="大家一起努力合作破關" />
-      </div>
-
-      <div class="field">
-        <label for="prize1Input">1分鐘內獎勵</label>
-        <input id="prize1Input" value="全班手搖飲" />
-      </div>
-
-      <div class="field">
-        <label for="prize2Input">3分鐘內獎勵</label>
-        <input id="prize2Input" value="全班冰棒" />
-      </div>
-
-      <div class="field">
-        <label for="prize3Input">5分鐘內獎勵</label>
-        <input id="prize3Input" value="全班麥香紅茶" />
-      </div>
-
-      <div class="field">
-        <label for="prize4Input">超過5分鐘顯示</label>
-        <input id="prize4Input" value="通關完成小獎勵" />
-      </div>
-    </div>
+      <a class="card ruins" href="./ancient-ruins-mission.html">
+        <div class="tag">ANCIENT RUINS</div>
+        <h2>考古遺跡解封風</h2>
+        <p>石板、符文、古文明機關與遺跡石門，像在解讀最後一座封印遺址。</p>
+        <div class="cta">開啟考古遺跡風</div>
+      </a>
+    </section>
   </div>
-
-  <div class="utility-bar">
-    <div class="teacher-panel" data-label="LETTER UPLOAD">
-      <span class="teacher-label">老師新增字母</span>
-      <input class="teacher-input" id="letterInput" maxlength="1" placeholder="A-Z" autocomplete="off" />
-      <button class="side-btn add" id="addBtn" onclick="addLetter()">新增字母</button>
-      <button class="side-btn undo" id="undoBtn" onclick="undoLetter()">退回一個</button>
-    </div>
-    <div class="right-tools" data-label="MISSION CONTROL">
-      <button class="side-btn config" onclick="toggleSetup()">設定區</button>
-      <button class="side-btn start" id="startBtn" onclick="startGame()" disabled>開始計時</button>
-      <button class="side-btn reset" onclick="resetGame(true)">重新開始</button>
-    </div>
-  </div>
-
-  <h1 id="mainTitle">全班最後試煉</h1>
-  <div class="subtitle" id="mainSubtitle">大家一起努力合作破關</div>
-
-  <div class="top-bar">
-    <div class="timer" data-label="MISSION TIMER">
-      <div class="timer-inline">時間：<span id="time">00:00</span></div>
-    </div>
-    <div class="count-box" data-label="DATA COLLECTED">
-      <div class="count-inline">已收集：<span id="letterCount">0</span>/<span id="targetCount">13</span></div>
-    </div>
-    <div class="prize tier1" id="prize" data-label="MISSION REWARD">挑戰獎勵：全班手搖飲</div>
-  </div>
-
-  <div class="hint-box" id="hintBox">請先完成教師設定，並收集字母。</div>
-
-  <div class="slots" id="slots"></div>
-  <div class="letter-bank" id="letterBank"></div>
-
-  <div class="main-controls">
-    <button class="check-btn" onclick="checkAnswer()">VERIFY CODE｜確認答案</button>
-  </div>
-
-  <div class="small-note" id="smallNote">
-    老師每收到一個字母，就在左上方輸入並新增。字母到齊後才能開始計時；1:00、3:00、5:00 會播放醒目音效並開放提示。
-  </div>
-</div>
-
-<div class="result" id="result">
-  <div class="result-card" id="resultCard">
-    <h2 id="resultTitle">成功！</h2>
-    <div class="answer" id="resultAnswer" style="display:none;"></div>
-    <p id="resultText"></p>
-    <button class="side-btn" onclick="closeResult()">返回任務畫面</button>
-  </div>
-</div>
-
-<script>
-  let answer = "BRAINSTORMING";
-  let targetCountValue = 13;
-
-  let hint1 = '提示一：第一個字母是 "B"。';
-  let hint2 = '提示二：最後一個字母是 "G"。';
-  let hint3 = "提示三：這個單字拆成兩段理解，前 5 個字母＋後 8 個字母。";
-
-  let prize1 = "全班手搖飲";
-  let prize2 = "全班冰棒";
-  let prize3 = "全班麥香紅茶";
-  let prize4 = "通關完成小獎勵";
-
-  let addedHistory = [];
-
-  let startTime = null;
-  let timerInterval = null;
-  let elapsedSeconds = 0;
-  let audioCtx = null;
-  let rung60 = false;
-  let rung180 = false;
-  let rung300 = false;
-
-  const setupPanel = document.getElementById("setupPanel");
-  const answerInput = document.getElementById("answerInput");
-  const answerPreview = document.getElementById("answerPreview");
-  const mainTitle = document.getElementById("mainTitle");
-  const mainSubtitle = document.getElementById("mainSubtitle");
-
-  const slots = document.getElementById("slots");
-  const letterBank = document.getElementById("letterBank");
-  const timeEl = document.getElementById("time");
-  const hintBox = document.getElementById("hintBox");
-  const prizeEl = document.getElementById("prize");
-  const startBtn = document.getElementById("startBtn");
-  const addBtn = document.getElementById("addBtn");
-  const undoBtn = document.getElementById("undoBtn");
-  const letterInput = document.getElementById("letterInput");
-  const letterCount = document.getElementById("letterCount");
-  const targetCount = document.getElementById("targetCount");
-  const smallNote = document.getElementById("smallNote");
-
-  function normalizeAnswer(text) {
-    return text.toUpperCase().replace(/[^A-Z]/g, "");
-  }
-
-  function toggleSetup() {
-    setupPanel.classList.toggle("hidden");
-  }
-
-  function updateAnswerPreview() {
-    const normalized = normalizeAnswer(answerInput.value);
-    answerPreview.textContent = `目前答案字母數：${normalized.length || 0}`;
-  }
-
-  answerInput.addEventListener("input", updateAnswerPreview);
-
-  function applySettings() {
-    if (timerInterval || addedHistory.length > 0) {
-      if (!confirm("套用新設定會清空目前已新增字母與計時，確定嗎？")) return;
-    }
-
-    const normalized = normalizeAnswer(answerInput.value);
-    if (normalized.length < 2) {
-      showResult("答案設定錯誤", "請輸入至少 2 個英文字母。", true);
-      return;
-    }
-
-    answer = normalized;
-    targetCountValue = answer.length;
-
-    hint1 = document.getElementById("hint1Input").value.trim() || "提示一已開放。";
-    hint2 = document.getElementById("hint2Input").value.trim() || "提示二已開放。";
-    hint3 = document.getElementById("hint3Input").value.trim() || "提示三已開放。";
-
-    prize1 = document.getElementById("prize1Input").value.trim() || "最高獎勵";
-    prize2 = document.getElementById("prize2Input").value.trim() || "第二階獎勵";
-    prize3 = document.getElementById("prize3Input").value.trim() || "第三階獎勵";
-    prize4 = document.getElementById("prize4Input").value.trim() || "完成最後試煉";
-
-    mainTitle.textContent = document.getElementById("titleInput").value.trim() || "全班最後試煉";
-    mainSubtitle.textContent = document.getElementById("subtitleInput").value.trim() || "收集字母後，請合作解開全班最後試煉！";
-
-    resetGame(false);
-    createSlots();
-
-    targetCount.textContent = targetCountValue;
-    smallNote.textContent = `老師每收到一個字母，就在左上方輸入並新增。收集 ${targetCountValue} 個字母後才能開始計時；1:00、3:00、5:00 會播放醒目音效並開放提示。`;
-    setPrizeTier(`挑戰獎勵：${prize1}`, "tier1");
-    hintBox.textContent = `請先收集 ${targetCountValue} 個字母。目前已收集 0/${targetCountValue}。`;
-
-    setupPanel.classList.add("hidden");
-  }
-
-  function createSlots() {
-    slots.innerHTML = "";
-    slots.style.gridTemplateColumns = `repeat(${Math.min(targetCountValue, 15)}, 1fr)`;
-
-    for (let i = 0; i < targetCountValue; i++) {
-      const slot = document.createElement("div");
-      slot.className = "slot";
-      slot.dataset.index = i;
-      addDropEvents(slot);
-      slots.appendChild(slot);
-    }
-  }
-
-  function refreshTeacherControls() {
-    letterCount.textContent = addedHistory.length;
-    targetCount.textContent = targetCountValue;
-
-    const locked = timerInterval !== null || addedHistory.length >= targetCountValue;
-    letterInput.disabled = locked;
-    addBtn.disabled = locked;
-    undoBtn.disabled = addedHistory.length === 0 || timerInterval !== null;
-
-    if (addedHistory.length === targetCountValue) {
-      startBtn.disabled = false;
-      hintBox.textContent = `${targetCountValue} 個字母已集合！請按「開始計時」，最後試煉即將開始。`;
-      flashHint();
-    } else {
-      startBtn.disabled = true;
-      hintBox.textContent = `請先收集 ${targetCountValue} 個字母。目前已收集 ${addedHistory.length}/${targetCountValue}。`;
-    }
-  }
-
-  function addLetter() {
-    if (addedHistory.length >= targetCountValue || timerInterval !== null) return;
-
-    const raw = letterInput.value.trim();
-    if (!/^[a-zA-Z]$/.test(raw)) {
-      showResult("請輸入一個英文字母", "老師新增字母時，請輸入 A-Z 的單一字母。", true);
-      letterInput.value = "";
-      letterInput.focus();
-      return;
-    }
-
-    const letter = raw.toUpperCase();
-    const letterId = `letter-${Date.now()}-${Math.random().toString(36).slice(2)}-${letter}`;
-
-    const el = document.createElement("div");
-    el.className = "letter";
-    el.textContent = letter;
-    el.draggable = true;
-    el.id = letterId;
-    addDragEvents(el);
-    letterBank.appendChild(el);
-
-    addedHistory.push({ letter, id: letterId });
-    letterInput.value = "";
-    letterInput.focus();
-    playAddSound();
-    refreshTeacherControls();
-  }
-
-  function undoLetter() {
-    if (addedHistory.length === 0 || timerInterval !== null) return;
-
-    const last = addedHistory.pop();
-    const el = document.getElementById(last.id);
-    if (el) el.remove();
-
-    refreshTeacherControls();
-  }
-
-  function addDragEvents(el) {
-    el.addEventListener("dragstart", e => {
-      e.dataTransfer.setData("text/plain", el.id);
-    });
-    el.addEventListener("pointerdown", pointerDown);
-  }
-
-  function addDropEvents(zone) {
-    zone.addEventListener("dragover", e => {
-      e.preventDefault();
-      zone.classList.add("over");
-    });
-
-    zone.addEventListener("dragleave", () => {
-      zone.classList.remove("over");
-    });
-
-    zone.addEventListener("drop", e => {
-      e.preventDefault();
-      zone.classList.remove("over");
-      const id = e.dataTransfer.getData("text/plain");
-      const el = document.getElementById(id);
-      if (!el) return;
-      moveLetterToZone(el, zone);
-    });
-  }
-
-  function moveLetterToZone(el, zone) {
-    if (zone.classList.contains("slot")) {
-      if (zone.firstChild && zone.firstChild !== el) {
-        letterBank.appendChild(zone.firstChild);
-      }
-      zone.appendChild(el);
-    } else {
-      zone.appendChild(el);
-    }
-  }
-
-  function pointerDown(e) {
-    const original = e.currentTarget;
-    original.setPointerCapture(e.pointerId);
-
-    const clone = original.cloneNode(true);
-    const rect = original.getBoundingClientRect();
-    clone.style.position = "fixed";
-    clone.style.left = rect.left + "px";
-    clone.style.top = rect.top + "px";
-    clone.style.zIndex = "9999";
-    clone.style.pointerEvents = "none";
-    clone.style.opacity = "0.94";
-    clone.style.transform = "scale(1.05)";
-    document.body.appendChild(clone);
-
-    original.style.visibility = "hidden";
-
-    function move(ev) {
-      clone.style.left = ev.clientX - clone.offsetWidth / 2 + "px";
-      clone.style.top = ev.clientY - clone.offsetHeight / 2 + "px";
-    }
-
-    function up(ev) {
-      document.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerup", up);
-
-      const target = document.elementFromPoint(ev.clientX, ev.clientY);
-      const dropZone = target && target.closest(".slot, .letter-bank");
-      original.style.visibility = "visible";
-      clone.remove();
-
-      if (dropZone) {
-        moveLetterToZone(original, dropZone);
-      }
-    }
-
-    document.addEventListener("pointermove", move);
-    document.addEventListener("pointerup", up);
-  }
-
-  function initAudio() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === "suspended") {
-      audioCtx.resume();
-    }
-  }
-
-  function beep(freq, duration, delay = 0, volume = 0.28, type = "square") {
-    if (!audioCtx) return;
-    const start = audioCtx.currentTime + delay;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-
-    osc.type = type;
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(volume, start + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start(start);
-    osc.stop(start + duration + 0.04);
-  }
-
-  function noiseBurst(duration, delay = 0, volume = 0.18) {
-    if (!audioCtx) return;
-
-    const start = audioCtx.currentTime + delay;
-    const sampleRate = audioCtx.sampleRate;
-    const bufferSize = Math.floor(sampleRate * duration);
-    const buffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
-    const data = buffer.getChannelData(0);
-
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
-    }
-
-    const source = audioCtx.createBufferSource();
-    const gain = audioCtx.createGain();
-    const filter = audioCtx.createBiquadFilter();
-
-    filter.type = "bandpass";
-    filter.frequency.value = 1200;
-    filter.Q.value = 0.9;
-
-    gain.gain.setValueAtTime(volume, start);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
-    source.buffer = buffer;
-    source.connect(filter);
-    filter.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    source.start(start);
-    source.stop(start + duration);
-  }
-
-  function playAddSound() {
-    initAudio();
-    beep(659, 0.10, 0, 0.18, "triangle");
-    beep(880, 0.14, 0.08, 0.18, "triangle");
-  }
-
-  function dramaticAlert(level) {
-    initAudio();
-    noiseBurst(0.35, 0, 0.20);
-
-    for (let i = 0; i < level; i++) {
-      const base = i * 0.82;
-      beep(523, 0.18, base + 0.00, 0.32, "square");
-      beep(784, 0.18, base + 0.20, 0.34, "square");
-      beep(1047, 0.28, base + 0.40, 0.38, "sawtooth");
-      noiseBurst(0.16, base + 0.55, 0.12);
-    }
-  }
-
-  function ringBell(count) {
-    dramaticAlert(count);
-    flashHint();
-  }
-
-  function flashHint() {
-    hintBox.classList.add("flash");
-    setTimeout(() => hintBox.classList.remove("flash"), 900);
-  }
-
-  function startGame() {
-    if (timerInterval || addedHistory.length < targetCountValue) return;
-
-    initAudio();
-    startTime = Date.now() - elapsedSeconds * 1000;
-    timerInterval = setInterval(() => {
-      elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-      updateTimer();
-      updateHintAndPrize();
-    }, 250);
-
-    startBtn.textContent = "計時中";
-    startBtn.disabled = true;
-    startBtn.style.opacity = "0.7";
-    startBtn.style.cursor = "default";
-    addBtn.disabled = true;
-    undoBtn.disabled = true;
-    letterInput.disabled = true;
-    hintBox.textContent = "提示尚未開放。現在是無提示挑戰！";
-    setupPanel.classList.add("hidden");
-  }
-
-  function updateTimer() {
-    const min = String(Math.floor(elapsedSeconds / 60)).padStart(2, "0");
-    const sec = String(elapsedSeconds % 60).padStart(2, "0");
-    timeEl.textContent = `${min}:${sec}`;
-  }
-
-  function setPrizeTier(text, tierClass) {
-    prizeEl.textContent = text;
-    prizeEl.className = `prize ${tierClass}`;
-  }
-
-  function updateHintAndPrize() {
-    if (elapsedSeconds < 60) {
-      hintBox.textContent = "提示尚未開放。現在是無提示挑戰！";
-      setPrizeTier(`挑戰獎勵：${prize1}`, "tier1");
-    } else if (elapsedSeconds < 180) {
-      if (!rung60) { ringBell(1); rung60 = true; }
-      hintBox.textContent = hint1;
-      setPrizeTier(`挑戰獎勵：${prize2}`, "tier2");
-    } else if (elapsedSeconds < 300) {
-      if (!rung180) { ringBell(2); rung180 = true; }
-      hintBox.textContent = hint2;
-      setPrizeTier(`挑戰獎勵：${prize3}`, "tier3");
-    } else {
-      if (!rung300) { ringBell(3); rung300 = true; }
-      hintBox.textContent = hint3;
-      setPrizeTier(`目前任務：${prize4}`, "tier4");
-    }
-  }
-
-  function getCurrentAnswer() {
-    return Array.from(slots.children)
-      .map(slot => slot.firstChild ? slot.firstChild.textContent : "_")
-      .join("");
-  }
-
-  function checkAnswer() {
-    if (addedHistory.length < targetCountValue) {
-      showResult("字母尚未集齊！", `目前只收集到 ${addedHistory.length}/${targetCountValue} 個字母，請繼續等待寶箱回報。`, true);
-      return;
-    }
-
-    const current = getCurrentAnswer();
-
-    if (current === answer) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      startBtn.textContent = "已完成";
-
-      let prize = "";
-      if (elapsedSeconds < 60) {
-        prize = `神級合體！${prize1}！`;
-      } else if (elapsedSeconds < 180) {
-        prize = `強力破關！${prize2}！`;
-      } else if (elapsedSeconds < 300) {
-        prize = `成功通關！${prize3}！`;
-      } else {
-        prize = prize4;
-      }
-
-      showResult("破關成功！", prize, false);
-    } else {
-      showResult("還沒成功！", "字母還沒有排成正確單字，請繼續調整。", true);
-    }
-  }
-
-  function showResult(title, text, isWrong) {
-    const answerEl = document.getElementById("resultAnswer");
-    document.getElementById("resultTitle").textContent = title;
-    document.getElementById("resultText").textContent = text;
-    document.getElementById("resultCard").classList.toggle("wrong", isWrong);
-
-    if (isWrong) {
-      answerEl.style.display = "none";
-      answerEl.textContent = "";
-    } else {
-      answerEl.style.display = "block";
-      answerEl.textContent = answer;
-    }
-
-    document.getElementById("result").style.display = "flex";
-  }
-
-  function closeResult() {
-    document.getElementById("result").style.display = "none";
-  }
-
-  function confirmReset() {
-    resetGame(true);
-  }
-
-  function resetGame(showHint = true) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-    startTime = null;
-    elapsedSeconds = 0;
-    rung60 = false;
-    rung180 = false;
-    rung300 = false;
-    addedHistory = [];
-
-    updateTimer();
-    letterBank.innerHTML = "";
-    closeResult();
-
-    createSlots();
-
-    setPrizeTier(`挑戰獎勵：${prize1}`, "tier1");
-    startBtn.disabled = true;
-    startBtn.textContent = "開始計時";
-    startBtn.style.opacity = "1";
-    startBtn.style.cursor = "pointer";
-    addBtn.disabled = false;
-    undoBtn.disabled = true;
-    letterInput.disabled = false;
-    letterInput.value = "";
-    refreshTeacherControls();
-
-    if (showHint) {
-      hintBox.textContent = `已重新開始！請先收集 ${targetCountValue} 個字母。目前已收集 0/${targetCountValue}。`;
-      flashHint();
-    }
-  }
-
-  letterInput.addEventListener("keydown", event => {
-    if (event.key === "Enter") addLetter();
-  });
-
-  createSlots();
-  updateAnswerPreview();
-  applySettings();
-</script>
 </body>
 </html>
