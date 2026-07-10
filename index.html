@@ -70,6 +70,14 @@
     gap: 16px;
   }
 
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
   .brand {
     display: flex;
     flex-direction: column;
@@ -697,9 +705,14 @@
         <div class="brand-tag">MISSION PORTAL</div>
         <div class="brand-title">全班最後試煉｜插畫式解謎任務大廳</div>
       </div>
-      <button type="button" class="guide-trigger" id="openGuide" aria-haspopup="dialog" aria-controls="guideModal">
-        教師操作說明
-      </button>
+      <div class="topbar-actions">
+        <button type="button" class="guide-trigger" id="fullscreenBtn">
+          進入全螢幕
+        </button>
+        <button type="button" class="guide-trigger" id="openGuide" aria-haspopup="dialog" aria-controls="guideModal">
+          教師操作說明
+        </button>
+      </div>
     </header>
 
     <section class="stage-shell" aria-labelledby="portalTitle">
@@ -865,6 +878,7 @@
     const sceneImage = document.getElementById("sceneImage");
     const hotspotLinks = document.querySelectorAll(".hotspot, .card-link, .text-link");
     const modal = document.getElementById("guideModal");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
     const openGuideButton = document.getElementById("openGuide");
     const closeGuideButton = document.getElementById("closeGuide");
     let lastFocusedElement = null;
@@ -893,6 +907,36 @@
 
     hotspotLinks.forEach(addPressFeedback);
 
+    function getFullscreenElement() {
+      return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+
+    function updateFullscreenButton() {
+      fullscreenBtn.textContent = getFullscreenElement() ? "離開全螢幕" : "進入全螢幕";
+    }
+
+    async function toggleFullscreen() {
+      try {
+        if (getFullscreenElement()) {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        } else {
+          const target = document.documentElement;
+          if (target.requestFullscreen) {
+            await target.requestFullscreen();
+          } else if (target.webkitRequestFullscreen) {
+            target.webkitRequestFullscreen();
+          }
+        }
+      } catch (error) {
+        console.warn("Fullscreen toggle failed", error);
+      }
+      updateFullscreenButton();
+    }
+
     function openGuideModal() {
       lastFocusedElement = document.activeElement;
       modal.classList.add("is-open");
@@ -910,6 +954,7 @@
       }
     }
 
+    fullscreenBtn.addEventListener("click", toggleFullscreen);
     openGuideButton.addEventListener("click", openGuideModal);
     closeGuideButton.addEventListener("click", closeGuideModal);
 
@@ -924,6 +969,10 @@
         closeGuideModal();
       }
     });
+
+    document.addEventListener("fullscreenchange", updateFullscreenButton);
+    document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
+    updateFullscreenButton();
   </script>
 </body>
 </html>

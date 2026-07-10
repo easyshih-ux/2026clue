@@ -1199,6 +1199,7 @@
       <button class="side-btn config" onclick="toggleSetup()">設定區</button>
       <button class="side-btn start" id="startBtn" onclick="startGame()" disabled>啟動機關</button>
       <button class="side-btn reset" onclick="resetGame(true)">重置機關</button>
+      <button class="side-btn" id="fullscreenBtn" onclick="toggleFullscreen()">進入全螢幕</button>
     </div>
   </div>
 
@@ -1279,6 +1280,7 @@
   const letterCount = document.getElementById("letterCount");
   const targetCount = document.getElementById("targetCount");
   const smallNote = document.getElementById("smallNote");
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
 
   function normalizeAnswer(text) {
     return text.toUpperCase().replace(/[^A-Z]/g, "");
@@ -1679,6 +1681,36 @@
     document.getElementById("result").style.display = "none";
   }
 
+  function getFullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function updateFullscreenButton() {
+    fullscreenBtn.textContent = getFullscreenElement() ? "離開全螢幕" : "進入全螢幕";
+  }
+
+  async function toggleFullscreen() {
+    try {
+      if (getFullscreenElement()) {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      } else {
+        const target = document.documentElement;
+        if (target.requestFullscreen) {
+          await target.requestFullscreen();
+        } else if (target.webkitRequestFullscreen) {
+          target.webkitRequestFullscreen();
+        }
+      }
+    } catch (error) {
+      console.warn("Fullscreen toggle failed", error);
+    }
+    updateFullscreenButton();
+  }
+
   function confirmReset() {
     resetGame(true);
   }
@@ -1720,8 +1752,12 @@
     if (event.key === "Enter") addLetter();
   });
 
+  document.addEventListener("fullscreenchange", updateFullscreenButton);
+  document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
+
   createSlots();
   updateAnswerPreview();
+  updateFullscreenButton();
   applySettings();
 </script>
 </body>
