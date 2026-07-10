@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>全班最後試煉｜教師設定頁</title>
+<style>
+  :root {
+    --bg: #07111b;
+    --panel: rgba(10, 21, 35, 0.88);
+    --panel-soft: rgba(16, 30, 46, 0.74);
+    --line: rgba(146, 225, 255, 0.2);
+    --line-strong: rgba(146, 225, 255, 0.5);
+    --text: #f3f9ff;
+    --muted: #abc3d5;
+    --accent: #8deeff;
+    --accent-2: #90ffbf;
+    --danger: #ff8d9d;
+    --shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(circle at top, rgba(121, 202, 255, 0.16), transparent 28%),
+      linear-gradient(180deg, #040911 0%, #09131e 50%, #04070d 100%);
+  }
+
+  a {
+    color: var(--accent);
+  }
+
+  .page {
+    width: min(1320px, 94vw);
+    margin: 0 auto;
+    padding: 26px 0 38px;
+  }
+
+  .hero,
+  .panel,
+  .launch-card,
+  .preview-panel {
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+  }
+
+  .hero {
+    padding: 28px;
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .eyebrow {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.26em;
+  }
+
+  h1 {
+    margin: 12px 0 10px;
+    font-size: clamp(34px, 4.8vw, 62px);
+    line-height: 1.08;
+  }
+
+  .hero p,
+  .hero li,
+  .field-note,
+  .launch-card p {
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .hero ul {
+    margin: 12px 0 0;
+    padding-left: 18px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .panel {
+    margin-top: 18px;
+    padding: 24px;
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .section-head h2 {
+    margin: 0 0 8px;
+    font-size: clamp(24px, 3vw, 36px);
+  }
+
+  .section-head p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .action-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 20px;
+    background: var(--panel-soft);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .field.full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-weight: 900;
+    font-size: 15px;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    border: 1px solid rgba(146, 225, 255, 0.22);
+    border-radius: 16px;
+    padding: 12px 14px;
+    font: inherit;
+    color: var(--text);
+    background: rgba(5, 13, 24, 0.88);
+  }
+
+  textarea {
+    min-height: 94px;
+    resize: vertical;
+  }
+
+  input:focus,
+  textarea:focus,
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid #fff1a8;
+    outline-offset: 3px;
+  }
+
+  .field-note {
+    font-size: 13px;
+  }
+
+  .readonly {
+    color: var(--accent-2);
+    font-weight: 900;
+    font-size: 18px;
+  }
+
+  .button {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    padding: 12px 18px;
+    font: inherit;
+    font-weight: 900;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+  }
+
+  .button:hover {
+    transform: translateY(-1px);
+    border-color: var(--line-strong);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .button.primary {
+    background: linear-gradient(135deg, rgba(74, 190, 255, 0.3), rgba(127, 255, 202, 0.22));
+    border-color: rgba(127, 255, 202, 0.36);
+  }
+
+  .button.danger {
+    border-color: rgba(255, 141, 157, 0.36);
+    color: #ffdce2;
+  }
+
+  .status {
+    margin-top: 16px;
+    min-height: 26px;
+    font-weight: 800;
+    color: var(--accent-2);
+  }
+
+  .launch-grid {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .launch-card {
+    padding: 18px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.16s ease, border-color 0.16s ease;
+  }
+
+  .launch-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--line-strong);
+  }
+
+  .launch-card span {
+    display: block;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+  }
+
+  .launch-card strong {
+    display: block;
+    margin: 10px 0 8px;
+    font-size: 22px;
+  }
+
+  .preview-wrap {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 14px;
+  }
+
+  .preview-panel {
+    padding: 20px;
+  }
+
+  .preview-panel h3 {
+    margin: 0 0 12px;
+    font-size: 22px;
+  }
+
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #ddf5ff;
+  }
+
+  .checklist {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  @media (max-width: 980px) {
+    .grid,
+    .preview-wrap,
+    .launch-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .page {
+      width: min(94vw, 94vw);
+      padding: 18px 0 28px;
+    }
+
+    .hero,
+    .panel,
+    .launch-card,
+    .preview-panel {
+      border-radius: 22px;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">TEACHER ADMIN</div>
+        <h1>全班最後試煉｜教師設定頁</h1>
+        <p>這一頁專門管理題目、提示、獎勵與時間門檻。儲存後，首頁與四個風格版本會讀取同一份設定，學生端不會再看到設定面板。</p>
+        <ul>
+          <li>建議先在這裡完成設定，再從首頁或下方入口開啟學生畫面。</li>
+          <li>這是課堂防誤觸用途，不是登入系統，請不要放真正機密資料。</li>
+        </ul>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="./index.html">回學生首頁</a>
+        <button class="button primary" type="button" id="saveTopBtn">儲存設定</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2>任務內容設定</h2>
+          <p>答案會自動轉為大寫英文，字母數會依答案自動更新。</p>
+        </div>
+        <div class="action-row">
+          <button class="button primary" type="button" id="saveBtn">儲存設定</button>
+          <button class="button" type="button" id="loadBtn">重新讀取目前設定</button>
+          <button class="button danger" type="button" id="resetBtn">重設為預設值</button>
+        </div>
+      </div>
+
+      <form id="settingsForm">
+        <div class="grid">
+          <div class="field">
+            <label for="titleInput">主標題</label>
+            <input id="titleInput" name="title" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="subtitleInput">副標題</label>
+            <input id="subtitleInput" name="subtitle" autocomplete="off" />
+          </div>
+
+          <div class="field full">
+            <label for="answerInput">正確答案</label>
+            <input id="answerInput" name="answer" autocomplete="off" />
+            <div class="field-note">系統會自動過濾成 A-Z，並同步更新字母數。</div>
+          </div>
+
+          <div class="field">
+            <label>自動字母數</label>
+            <div class="readonly" id="letterCountValue">13</div>
+          </div>
+
+          <div class="field">
+            <label for="overtimeInput">超過最後時間後顯示文字</label>
+            <input id="overtimeInput" name="overtimeText" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="hint1Input">提示一內容</label>
+            <textarea id="hint1Input" name="hint1"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="hint2Input">提示二內容</label>
+            <textarea id="hint2Input" name="hint2"></textarea>
+          </div>
+
+          <div class="field full">
+            <label for="hint3Input">提示三內容</label>
+            <textarea id="hint3Input" name="hint3"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="prize1Input">第一階段獎勵</label>
+            <input id="prize1Input" name="prize1" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="prize2Input">第二階段獎勵</label>
+            <input id="prize2Input" name="prize2" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="prize3Input">第三階段獎勵</label>
+            <input id="prize3Input" name="prize3" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="hint1TimeInput">提示一時間</label>
+            <input id="hint1TimeInput" name="hint1Time" placeholder="01:00 或 60" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="hint2TimeInput">提示二時間</label>
+            <input id="hint2TimeInput" name="hint2Time" placeholder="03:00 或 180" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="hint3TimeInput">提示三時間</label>
+            <input id="hint3TimeInput" name="hint3Time" placeholder="05:00 或 300" autocomplete="off" />
+          </div>
+        </div>
+      </form>
+
+      <div class="status" id="statusText" aria-live="polite"></div>
+    </section>
+
+    <section class="preview-wrap">
+      <div class="preview-panel">
+        <h3>預覽目前設定</h3>
+        <pre id="previewJson"></pre>
+      </div>
+
+      <div class="preview-panel">
+        <h3>教師快速檢查</h3>
+        <ol class="checklist">
+          <li>先在這頁儲存設定。</li>
+          <li>再開 <a href="./index.html">學生首頁</a> 檢查學生端是否只剩入口與說明。</li>
+          <li>開任一風格版本，確認標題、提示與獎勵已同步。</li>
+          <li>若是從 PPT 超連結開啟首頁，學生就看不到設定欄位。</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="launch-grid" aria-label="教師快速開啟四個風格版本">
+      <a class="launch-card" href="./decode-mission-console.html">
+        <span>FUTURE COMMAND</span>
+        <strong>未來任務控制台</strong>
+        <p>科技感任務控制台版。</p>
+      </a>
+      <a class="launch-card" href="./ai-lab-decode-station.html">
+        <span>AI LAB</span>
+        <strong>AI 實驗室解碼艙</strong>
+        <p>全息研究站與解碼艙版。</p>
+      </a>
+      <a class="launch-card" href="./escape-room-mission.html">
+        <span>ESCAPE ROOM</span>
+        <strong>密室逃脫解謎風</strong>
+        <p>寶箱與機關解鎖版。</p>
+      </a>
+      <a class="launch-card" href="./ancient-ruins-mission.html">
+        <span>ANCIENT RUINS</span>
+        <strong>考古遺跡解封風</strong>
+        <p>石板符文與遺跡解封版。</p>
+      </a>
+    </section>
+  </main>
+
+  <script src="./clue-settings.js"></script>
+  <script>
+    const {
+      loadSettings,
+      saveSettings,
+      resetSettings,
+      normalizeAnswer,
+      normalizeSettings,
+      formatSeconds,
+      parseTimeInput
+    } = window.ClueGameSettings;
+
+    const form = document.getElementById("settingsForm");
+    const statusText = document.getElementById("statusText");
+    const previewJson = document.getElementById("previewJson");
+    const letterCountValue = document.getElementById("letterCountValue");
+    const answerInput = document.getElementById("answerInput");
+    const saveButtons = [document.getElementById("saveBtn"), document.getElementById("saveTopBtn")];
+
+    function formElements() {
+      return {
+        title: document.getElementById("titleInput"),
+        subtitle: document.getElementById("subtitleInput"),
+        answer: answerInput,
+        hint1: document.getElementById("hint1Input"),
+        hint2: document.getElementById("hint2Input"),
+        hint3: document.getElementById("hint3Input"),
+        prize1: document.getElementById("prize1Input"),
+        prize2: document.getElementById("prize2Input"),
+        prize3: document.getElementById("prize3Input"),
+        overtimeText: document.getElementById("overtimeInput"),
+        hint1Time: document.getElementById("hint1TimeInput"),
+        hint2Time: document.getElementById("hint2TimeInput"),
+        hint3Time: document.getElementById("hint3TimeInput")
+      };
+    }
+
+    function fillForm(settings) {
+      const elements = formElements();
+      elements.title.value = settings.title;
+      elements.subtitle.value = settings.subtitle;
+      elements.answer.value = settings.answer;
+      elements.hint1.value = settings.hint1;
+      elements.hint2.value = settings.hint2;
+      elements.hint3.value = settings.hint3;
+      elements.prize1.value = settings.prize1;
+      elements.prize2.value = settings.prize2;
+      elements.prize3.value = settings.prize3;
+      elements.overtimeText.value = settings.overtimeText;
+      elements.hint1Time.value = formatSeconds(settings.hint1Time);
+      elements.hint2Time.value = formatSeconds(settings.hint2Time);
+      elements.hint3Time.value = formatSeconds(settings.hint3Time);
+      syncLetterCount();
+      renderPreview();
+    }
+
+    function readForm() {
+      const elements = formElements();
+      return {
+        title: elements.title.value.trim(),
+        subtitle: elements.subtitle.value.trim(),
+        answer: elements.answer.value.trim(),
+        hint1: elements.hint1.value.trim(),
+        hint2: elements.hint2.value.trim(),
+        hint3: elements.hint3.value.trim(),
+        prize1: elements.prize1.value.trim(),
+        prize2: elements.prize2.value.trim(),
+        prize3: elements.prize3.value.trim(),
+        overtimeText: elements.overtimeText.value.trim(),
+        hint1Time: parseTimeInput(elements.hint1Time.value, 60),
+        hint2Time: parseTimeInput(elements.hint2Time.value, 180),
+        hint3Time: parseTimeInput(elements.hint3Time.value, 300)
+      };
+    }
+
+    function syncLetterCount() {
+      letterCountValue.textContent = normalizeAnswer(answerInput.value).length || 0;
+    }
+
+    function renderPreview() {
+      const current = normalizeSettings(readForm());
+      previewJson.textContent = JSON.stringify(current, null, 2);
+      fillTimesOnly(current);
+    }
+
+    function fillTimesOnly(settings) {
+      document.getElementById("hint1TimeInput").value = formatSeconds(settings.hint1Time);
+      document.getElementById("hint2TimeInput").value = formatSeconds(settings.hint2Time);
+      document.getElementById("hint3TimeInput").value = formatSeconds(settings.hint3Time);
+      letterCountValue.textContent = settings.letterCount;
+    }
+
+    function showStatus(text, isError) {
+      statusText.textContent = text;
+      statusText.style.color = isError ? "var(--danger)" : "var(--accent-2)";
+    }
+
+    function handleSave() {
+      const normalizedAnswer = normalizeAnswer(answerInput.value);
+      if (normalizedAnswer.length < 2) {
+        showStatus("請輸入至少 2 個英文字母作為正確答案。", true);
+        answerInput.focus();
+        return;
+      }
+
+      const saved = saveSettings(readForm());
+      fillForm(saved);
+      showStatus("教師設定已儲存，四個風格版本會讀取同一份內容。", false);
+    }
+
+    function handleReset() {
+      const restored = resetSettings();
+      fillForm(restored);
+      showStatus("已重設為預設值，記得再按一次儲存即可使用。", false);
+    }
+
+    answerInput.addEventListener("input", () => {
+      syncLetterCount();
+      renderPreview();
+    });
+
+    form.addEventListener("input", event => {
+      if (event.target !== answerInput) {
+        renderPreview();
+      }
+    });
+
+    saveButtons.forEach(button => button.addEventListener("click", handleSave));
+    document.getElementById("loadBtn").addEventListener("click", () => {
+      fillForm(loadSettings());
+      showStatus("已重新載入目前儲存的教師設定。", false);
+    });
+    document.getElementById("resetBtn").addEventListener("click", handleReset);
+
+    fillForm(loadSettings());
+    showStatus("目前顯示的是最新儲存設定。", false);
+  </script>
+</body>
+</html>

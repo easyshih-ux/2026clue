@@ -1252,66 +1252,12 @@
 </head>
 <body>
 <div class="page">
-  <div class="setup-panel" id="setupPanel">
+  <div class="setup-panel hidden" id="setupPanel" aria-hidden="true">
     <div class="setup-title">
       <div class="title-stack">
-        <div class="eyebrow">AI LAB DECODE STATION</div>
-        <div class="setup-heading">研究站設定區｜全息解碼控制台</div>
-        <div class="setup-sub">可自訂答案、提示與獎勵，像在研究艙中校準最後解碼任務。</div>
-      </div>
-      <button class="side-btn save" onclick="applySettings()">套用設定</button>
-    </div>
-
-    <div class="setup-grid">
-      <div class="field full">
-        <label for="answerInput">正確答案｜請輸入英文單字，系統會自動計算字母數</label>
-        <input id="answerInput" value="BRAINSTORMING" placeholder="例如：BRAINSTORMING" autocomplete="off" />
-        <div class="hint-preview" id="answerPreview">目前答案字母數：13</div>
-      </div>
-
-      <div class="field">
-        <label for="hint1Input">提示一｜1:00 出現</label>
-        <input id="hint1Input" value='提示一：第一個字母是 "B"。' />
-      </div>
-
-      <div class="field">
-        <label for="hint2Input">提示二｜3:00 出現</label>
-        <input id="hint2Input" value='提示二：最後一個字母是 "G"。' />
-      </div>
-
-      <div class="field">
-        <label for="hint3Input">提示三｜5:00 出現</label>
-        <input id="hint3Input" value="提示三：這個單字拆成兩段理解，前 5 個字母＋後 8 個字母。" />
-      </div>
-
-      <div class="field">
-        <label for="titleInput">主標題</label>
-        <input id="titleInput" value="全班最後試煉" />
-      </div>
-
-      <div class="field">
-        <label for="subtitleInput">副標題｜避免破題可保持模糊</label>
-        <input id="subtitleInput" value="大家一起努力合作破關" />
-      </div>
-
-      <div class="field">
-        <label for="prize1Input">1分鐘內獎勵</label>
-        <input id="prize1Input" value="全班手搖飲" />
-      </div>
-
-      <div class="field">
-        <label for="prize2Input">3分鐘內獎勵</label>
-        <input id="prize2Input" value="全班冰棒" />
-      </div>
-
-      <div class="field">
-        <label for="prize3Input">5分鐘內獎勵</label>
-        <input id="prize3Input" value="全班麥香紅茶" />
-      </div>
-
-      <div class="field">
-        <label for="prize4Input">超過5分鐘顯示</label>
-        <input id="prize4Input" value="通關完成小獎勵" />
+        <div class="eyebrow">STUDENT DISPLAY MODE</div>
+        <div class="setup-heading">學生投影畫面已隱藏教師設定區</div>
+        <div class="setup-sub">若需修改答案、提示、獎勵或時間門檻，請改由 admin.html 進行設定。</div>
       </div>
     </div>
   </div>
@@ -1324,7 +1270,6 @@
       <button class="side-btn undo" id="undoBtn" onclick="undoLetter()">移除樣本</button>
     </div>
     <div class="right-tools" data-label="MISSION CONTROL">
-      <button class="side-btn config" onclick="toggleSetup()">設定區</button>
       <button class="side-btn start" id="startBtn" onclick="startGame()" disabled>啟動解碼</button>
       <button class="side-btn reset" onclick="resetGame(true)">重設研究站</button>
       <button class="side-btn" id="fullscreenBtn" onclick="toggleFullscreen()">進入全螢幕</button>
@@ -1344,7 +1289,7 @@
     <div class="prize tier1" id="prize" data-label="RESEARCH REWARD">研究獎勵：全班手搖飲</div>
   </div>
 
-  <div class="hint-box" id="hintBox">請先完成教師設定，並收集字母。</div>
+  <div class="hint-box" id="hintBox">請先在教師頁完成設定，再收集字母。</div>
 
   <div class="slots" id="slots"></div>
   <div class="letter-bank" id="letterBank"></div>
@@ -1367,7 +1312,10 @@
   </div>
 </div>
 
+<script src="./clue-settings.js"></script>
 <script>
+  const { loadSettings } = window.ClueGameSettings;
+
   let answer = "BRAINSTORMING";
   let targetCountValue = 13;
 
@@ -1379,6 +1327,9 @@
   let prize2 = "全班冰棒";
   let prize3 = "全班麥香紅茶";
   let prize4 = "通關完成小獎勵";
+  let hint1Time = 60;
+  let hint2Time = 180;
+  let hint3Time = 300;
 
   let addedHistory = [];
 
@@ -1390,9 +1341,6 @@
   let rung180 = false;
   let rung300 = false;
 
-  const setupPanel = document.getElementById("setupPanel");
-  const answerInput = document.getElementById("answerInput");
-  const answerPreview = document.getElementById("answerPreview");
   const mainTitle = document.getElementById("mainTitle");
   const mainSubtitle = document.getElementById("mainSubtitle");
 
@@ -1410,56 +1358,27 @@
   const smallNote = document.getElementById("smallNote");
   const fullscreenBtn = document.getElementById("fullscreenBtn");
 
-  function normalizeAnswer(text) {
-    return text.toUpperCase().replace(/[^A-Z]/g, "");
-  }
+  function loadSharedSettings() {
+    const settings = loadSettings();
+    answer = settings.answer;
+    targetCountValue = settings.letterCount;
+    hint1 = settings.hint1;
+    hint2 = settings.hint2;
+    hint3 = settings.hint3;
+    prize1 = settings.prize1;
+    prize2 = settings.prize2;
+    prize3 = settings.prize3;
+    prize4 = settings.overtimeText;
+    hint1Time = settings.hint1Time;
+    hint2Time = settings.hint2Time;
+    hint3Time = settings.hint3Time;
 
-  function toggleSetup() {
-    setupPanel.classList.toggle("hidden");
-  }
-
-  function updateAnswerPreview() {
-    const normalized = normalizeAnswer(answerInput.value);
-    answerPreview.textContent = `目前答案字母數：${normalized.length || 0}`;
-  }
-
-  answerInput.addEventListener("input", updateAnswerPreview);
-
-  function applySettings() {
-    if (timerInterval || addedHistory.length > 0) {
-      if (!confirm("套用新設定會清空目前已新增字母與計時，確定嗎？")) return;
-    }
-
-    const normalized = normalizeAnswer(answerInput.value);
-    if (normalized.length < 2) {
-      showResult("答案設定錯誤", "請輸入至少 2 個英文字母。", true);
-      return;
-    }
-
-    answer = normalized;
-    targetCountValue = answer.length;
-
-    hint1 = document.getElementById("hint1Input").value.trim() || "提示一已開放。";
-    hint2 = document.getElementById("hint2Input").value.trim() || "提示二已開放。";
-    hint3 = document.getElementById("hint3Input").value.trim() || "提示三已開放。";
-
-    prize1 = document.getElementById("prize1Input").value.trim() || "最高獎勵";
-    prize2 = document.getElementById("prize2Input").value.trim() || "第二階獎勵";
-    prize3 = document.getElementById("prize3Input").value.trim() || "第三階獎勵";
-    prize4 = document.getElementById("prize4Input").value.trim() || "完成最後試煉";
-
-    mainTitle.textContent = document.getElementById("titleInput").value.trim() || "全班最後試煉";
-    mainSubtitle.textContent = document.getElementById("subtitleInput").value.trim() || "收集字母後，請合作解開全班最後試煉！";
-
-    resetGame(false);
-    createSlots();
-
+    mainTitle.textContent = settings.title;
+    mainSubtitle.textContent = settings.subtitle;
     targetCount.textContent = targetCountValue;
-    smallNote.textContent = `老師每收到一個字母，就在左上方輸入並作為樣本加入。收集 ${targetCountValue} 個字母後才能啟動解碼；1:00、3:00、5:00 會播放提示音並開放 AI 提示。`;
+    smallNote.textContent = `老師每收到一個字母，就在左上方輸入並作為樣本加入。收集 ${targetCountValue} 個字母後才能啟動解碼；${Math.floor(hint1Time / 60)}:${String(hint1Time % 60).padStart(2, "0")}、${Math.floor(hint2Time / 60)}:${String(hint2Time % 60).padStart(2, "0")}、${Math.floor(hint3Time / 60)}:${String(hint3Time % 60).padStart(2, "0")} 會播放提示音並開放 AI 提示。`;
     setPrizeTier(`研究獎勵：${prize1}`, "tier1");
     hintBox.textContent = `請先收集 ${targetCountValue} 個字母。目前已收集 0/${targetCountValue}。`;
-
-    setupPanel.classList.add("hidden");
   }
 
   function createSlots() {
@@ -1719,7 +1638,6 @@
     undoBtn.disabled = true;
     letterInput.disabled = true;
     hintBox.textContent = "AI 提示尚未開放。請先依靠目前樣本進行解碼。";
-    setupPanel.classList.add("hidden");
   }
 
   function updateTimer() {
@@ -1734,14 +1652,14 @@
   }
 
   function updateHintAndPrize() {
-    if (elapsedSeconds < 60) {
+    if (elapsedSeconds < hint1Time) {
       hintBox.textContent = "AI 提示尚未開放。請先依靠目前樣本進行解碼。";
       setPrizeTier(`研究獎勵：${prize1}`, "tier1");
-    } else if (elapsedSeconds < 180) {
+    } else if (elapsedSeconds < hint2Time) {
       if (!rung60) { ringBell(1); rung60 = true; }
       hintBox.textContent = hint1;
       setPrizeTier(`研究獎勵：${prize2}`, "tier2");
-    } else if (elapsedSeconds < 300) {
+    } else if (elapsedSeconds < hint3Time) {
       if (!rung180) { ringBell(2); rung180 = true; }
       hintBox.textContent = hint2;
       setPrizeTier(`研究獎勵：${prize3}`, "tier3");
@@ -1772,11 +1690,11 @@
       startBtn.textContent = "解碼完成";
 
       let prize = "";
-      if (elapsedSeconds < 60) {
+      if (elapsedSeconds < hint1Time) {
         prize = `神級合體！${prize1}！`;
-      } else if (elapsedSeconds < 180) {
+      } else if (elapsedSeconds < hint2Time) {
         prize = `強力破關！${prize2}！`;
-      } else if (elapsedSeconds < 300) {
+      } else if (elapsedSeconds < hint3Time) {
         prize = `成功通關！${prize3}！`;
       } else {
         prize = prize4;
@@ -1883,10 +1801,10 @@
   document.addEventListener("fullscreenchange", updateFullscreenButton);
   document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
 
+  loadSharedSettings();
   createSlots();
-  updateAnswerPreview();
   updateFullscreenButton();
-  applySettings();
+  resetGame(false);
 </script>
 </body>
 </html>

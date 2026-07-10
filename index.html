@@ -698,7 +698,7 @@
   }
 </style>
 </head>
-<body class="debug-hotspots">
+<body>
   <main class="page">
     <header class="topbar">
       <div class="brand">
@@ -825,7 +825,7 @@
 
         <aside class="support-note">
           <h2>課堂備註</h2>
-          <p>首頁只負責任務入口與教師說明，四個遊戲版本的拖曳、計時、提示、響鈴、重新開始與自訂答案流程都維持原樣，不會因首頁改版而改動。</p>
+          <p>首頁只負責任務入口、教師操作提醒與文字備用入口。上課前請先由教師頁完成題目設定，再投影學生端畫面。</p>
         </aside>
       </div>
     </section>
@@ -843,7 +843,7 @@
       <div class="modal-head">
         <div>
           <h2 id="guideTitle">教師操作說明</h2>
-          <p id="guideDesc">這裡保留原本首頁的重要提醒與三步驟快速指南，方便上課前快速確認。</p>
+          <p id="guideDesc">這裡只保留課堂操作提醒，方便上課前快速確認，不顯示任何答案或設定欄位。</p>
         </div>
         <button type="button" class="modal-close" id="closeGuide" aria-label="關閉教師操作說明">×</button>
       </div>
@@ -861,8 +861,8 @@
           <p>依照課程主題選擇科技、AI、密室或考古遺跡版本，讓全班氛圍更一致。</p>
         </div>
         <div class="guide-step">
-          <strong>2. 再做教師設定</strong>
-          <p>進入後可以自訂答案、提示一到三、標題、副標題與獎勵內容。</p>
+          <strong>2. 先完成教師頁設定</strong>
+          <p>請先在教師專用頁完成題目、提示與獎勵設定，再投影學生端畫面。</p>
         </div>
         <div class="guide-step">
           <strong>3. 上課直接投影</strong>
@@ -880,8 +880,11 @@
     const modal = document.getElementById("guideModal");
     const fullscreenBtn = document.getElementById("fullscreenBtn");
     const openGuideButton = document.getElementById("openGuide");
+    const brand = document.querySelector(".brand");
     const closeGuideButton = document.getElementById("closeGuide");
     let lastFocusedElement = null;
+    let hiddenAdminClicks = 0;
+    let hiddenAdminTimer = null;
 
     function markImageFallback() {
       scenePanel.classList.add("image-failed");
@@ -973,6 +976,18 @@
     document.addEventListener("fullscreenchange", updateFullscreenButton);
     document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
     updateFullscreenButton();
+
+    brand.addEventListener("click", () => {
+      hiddenAdminClicks += 1;
+      clearTimeout(hiddenAdminTimer);
+      hiddenAdminTimer = setTimeout(() => {
+        hiddenAdminClicks = 0;
+      }, 2000);
+
+      if (hiddenAdminClicks >= 5) {
+        window.location.href = "./admin.html";
+      }
+    });
   </script>
 </body>
 </html>
