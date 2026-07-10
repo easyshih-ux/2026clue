@@ -3,20 +3,32 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>全班最後試煉｜教師專用入口頁</title>
+<title>全班最後試煉｜插畫式解謎任務大廳</title>
 <style>
   :root {
-    --bg: #06101a;
-    --panel: rgba(10, 23, 36, 0.84);
-    --panel-soft: rgba(12, 28, 44, 0.72);
-    --text: #eef8ff;
-    --muted: #aac1cf;
-    --line: rgba(127, 227, 255, 0.2);
-    --line-strong: rgba(127, 227, 255, 0.46);
-    --accent: #7ff1ff;
+    --bg-top: #18304a;
+    --bg-bottom: #0b1420;
+    --text: #f7fbff;
+    --muted: #bfd1e0;
+    --panel: rgba(7, 13, 24, 0.74);
+    --panel-strong: rgba(4, 9, 18, 0.9);
+    --line: rgba(181, 226, 255, 0.22);
+    --line-strong: rgba(181, 226, 255, 0.54);
+    --shadow: 0 32px 90px rgba(0, 0, 0, 0.42);
+    --focus: #fff3a6;
+    --future: #72ecff;
+    --lab: #85c6ff;
+    --escape: #ffcd85;
+    --ruins: #d7d2a2;
   }
 
-  * { box-sizing: border-box; }
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
 
   body {
     margin: 0;
@@ -24,288 +36,894 @@
     font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
     color: var(--text);
     background:
-      radial-gradient(circle at top, rgba(100, 205, 255, 0.18), transparent 24%),
-      linear-gradient(180deg, #04080f 0%, #07111b 50%, #03060b 100%);
+      radial-gradient(circle at top, rgba(174, 223, 255, 0.22), transparent 32%),
+      linear-gradient(180deg, var(--bg-top) 0%, #122235 42%, var(--bg-bottom) 100%);
+  }
+
+  body.modal-open {
+    overflow: hidden;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  button,
+  summary {
+    font: inherit;
   }
 
   .page {
-    width: min(1200px, 94vw);
+    width: min(1600px, 100%);
     margin: 0 auto;
-    padding: 38px 0 56px;
-  }
-
-  .hero,
-  .tips,
-  .card {
-    border: 1px solid var(--line);
-    background: var(--panel);
-    box-shadow: 0 24px 44px rgba(0,0,0,0.32);
-  }
-
-  .hero {
-    padding: 30px;
-    border-radius: 30px;
-    text-align: center;
-  }
-
-  .eyebrow {
-    color: var(--accent);
-    letter-spacing: 3px;
-    font-size: 13px;
-    font-weight: 900;
-  }
-
-  h1 {
-    margin: 12px 0 10px;
-    font-size: clamp(36px, 5.4vw, 68px);
-    line-height: 1.06;
-  }
-
-  .hero p {
-    margin: 0 auto;
-    max-width: 840px;
-    color: var(--muted);
-    font-size: clamp(16px, 1.9vw, 23px);
-    line-height: 1.65;
-  }
-
-  .hero-actions {
+    min-height: 100vh;
+    padding: 20px clamp(16px, 2vw, 28px) 28px;
     display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 18px;
-  }
-
-  .chip {
-    padding: 10px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(127, 227, 255, 0.22);
-    background: rgba(255,255,255,0.03);
-    color: #dff6ff;
-    font-size: 14px;
-    font-weight: 800;
-  }
-
-  .tips {
-    margin-top: 18px;
-    padding: 20px 22px;
-    border-radius: 24px;
-    background: var(--panel-soft);
-  }
-
-  .tips-title {
-    margin: 0 0 10px;
-    color: var(--accent);
-    font-size: 16px;
-    font-weight: 900;
-    letter-spacing: 2px;
-  }
-
-  .tips-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-  }
-
-  .tip-box {
-    padding: 14px;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(127, 227, 255, 0.12);
-  }
-
-  .tip-box strong {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 15px;
-  }
-
-  .tip-box span {
-    color: var(--muted);
-    line-height: 1.55;
-    font-size: 14px;
-  }
-
-  .section-title {
-    margin: 24px 0 12px;
-    font-size: clamp(24px, 3vw, 34px);
-    font-weight: 1000;
-  }
-
-  .section-sub {
-    margin: 0 0 16px;
-    color: var(--muted);
-    line-height: 1.6;
-    font-size: 16px;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-direction: column;
     gap: 18px;
   }
 
-  .card {
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .brand {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding: 24px;
-    border-radius: 24px;
-    text-decoration: none;
-    color: inherit;
-    transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    gap: 5px;
   }
 
-  .card:hover {
-    transform: translateY(-4px);
-    border-color: var(--line-strong);
-    box-shadow: 0 26px 44px rgba(0,0,0,0.38);
-  }
-
-  .tag {
+  .brand-tag {
     font-size: 12px;
     font-weight: 900;
-    letter-spacing: 2px;
-    opacity: 0.9;
+    letter-spacing: 0.26em;
+    color: #9fdcff;
   }
 
-  .card h2 {
+  .brand-title {
+    font-size: clamp(18px, 2vw, 26px);
+    font-weight: 900;
+  }
+
+  .guide-trigger {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(10, 18, 31, 0.72);
+    color: var(--text);
+    padding: 12px 18px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+
+  .guide-trigger:hover,
+  .guide-trigger:focus-visible {
+    transform: translateY(-1px);
+    border-color: var(--line-strong);
+    background: rgba(20, 32, 51, 0.86);
+  }
+
+  .guide-trigger:focus-visible,
+  .hotspot:focus-visible,
+  .text-link:focus-visible,
+  .card-link:focus-visible,
+  .modal-close:focus-visible,
+  .fallback-summary:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  .stage-shell {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .scene-panel {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 540px;
+    overflow: hidden;
+    border-radius: clamp(22px, 2vw, 34px);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(8, 12, 20, 0.18)),
+      radial-gradient(circle at 50% 36%, rgba(178, 214, 255, 0.34), transparent 24%),
+      radial-gradient(circle at 20% 30%, rgba(126, 182, 255, 0.24), transparent 26%),
+      radial-gradient(circle at 82% 26%, rgba(198, 230, 255, 0.22), transparent 24%),
+      linear-gradient(135deg, #2b4668 0%, #314f72 24%, #5c7aa0 46%, #314960 70%, #172535 100%);
+  }
+
+  .scene-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(7, 12, 20, 0.36)),
+      radial-gradient(circle at center, transparent 28%, rgba(8, 13, 22, 0.14) 76%, rgba(4, 8, 14, 0.26) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .scene-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 8.333%),
+      linear-gradient(rgba(255, 255, 255, 0.03) 0, rgba(255, 255, 255, 0.03) 1px, transparent 1px, transparent 12.5%);
+    opacity: 0.12;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .scene-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 0;
+  }
+
+  .scene-panel.image-failed .scene-image {
+    display: none;
+  }
+
+  .scene-copy {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 6% 14%;
+    pointer-events: none;
+  }
+
+  .scene-copy-inner {
+    max-width: 780px;
+    padding: 22px 26px;
+    border: 1px solid rgba(223, 244, 255, 0.18);
+    border-radius: 26px;
+    background: linear-gradient(180deg, rgba(31, 44, 63, 0.58), rgba(24, 34, 50, 0.3));
+    backdrop-filter: blur(10px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.28em;
+    color: #98d7ff;
+  }
+
+  h1 {
+    margin: 14px 0 12px;
+    font-size: clamp(40px, 5.5vw, 82px);
+    line-height: 1.04;
+    text-shadow: 0 8px 20px rgba(0, 0, 0, 0.44);
+  }
+
+  .scene-copy p {
     margin: 0;
-    font-size: clamp(24px, 2.6vw, 34px);
+    font-size: clamp(16px, 1.8vw, 24px);
+    color: #e5f0f8;
+    line-height: 1.65;
   }
 
-  .card p {
+  .hotspot-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+  }
+
+  .hotspot {
+    position: absolute;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    min-width: 180px;
+    text-decoration: none;
+    border-radius: 24px;
+    padding: 18px;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      background-color 0.18s ease,
+      border-color 0.18s ease;
+    border: 1px solid transparent;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  body.debug-hotspots .hotspot {
+    border: 2px dashed rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .hotspot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+    opacity: 0.8;
+  }
+
+  .hotspot:hover,
+  .hotspot:focus-visible,
+  .hotspot.is-pressed {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .hotspot.is-pressed {
+    transform: translateY(-1px) scale(0.995);
+  }
+
+  .hotspot.future:hover,
+  .hotspot.future:focus-visible,
+  .hotspot.future.is-pressed {
+    border-color: rgba(114, 236, 255, 0.62);
+    box-shadow: 0 0 0 1px rgba(114, 236, 255, 0.22), 0 0 36px rgba(114, 236, 255, 0.28);
+  }
+
+  .hotspot.lab:hover,
+  .hotspot.lab:focus-visible,
+  .hotspot.lab.is-pressed {
+    border-color: rgba(133, 198, 255, 0.62);
+    box-shadow: 0 0 0 1px rgba(133, 198, 255, 0.2), 0 0 36px rgba(133, 198, 255, 0.22);
+  }
+
+  .hotspot.escape:hover,
+  .hotspot.escape:focus-visible,
+  .hotspot.escape.is-pressed {
+    border-color: rgba(255, 205, 133, 0.62);
+    box-shadow: 0 0 0 1px rgba(255, 205, 133, 0.2), 0 0 36px rgba(255, 205, 133, 0.18);
+  }
+
+  .hotspot.ruins:hover,
+  .hotspot.ruins:focus-visible,
+  .hotspot.ruins.is-pressed {
+    border-color: rgba(215, 210, 162, 0.62);
+    box-shadow: 0 0 0 1px rgba(215, 210, 162, 0.18), 0 0 36px rgba(215, 210, 162, 0.16);
+  }
+
+  .hotspot-label {
+    position: relative;
+    z-index: 1;
+    max-width: min(100%, 300px);
+    padding: 14px 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(10px);
+    box-shadow:
+      0 12px 24px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+
+  .hotspot-label span {
+    display: block;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    opacity: 0.86;
+    margin-bottom: 6px;
+  }
+
+  .hotspot-label strong {
+    display: block;
+    font-size: clamp(18px, 1.7vw, 26px);
+    line-height: 1.2;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .hotspot.future .hotspot-label {
+    background: linear-gradient(180deg, rgba(17, 38, 69, 0.78), rgba(11, 26, 48, 0.66));
+    border-color: rgba(128, 226, 255, 0.24);
+  }
+
+  .hotspot.lab .hotspot-label {
+    background: linear-gradient(180deg, rgba(63, 48, 95, 0.74), rgba(47, 34, 76, 0.64));
+    border-color: rgba(221, 188, 255, 0.24);
+  }
+
+  .hotspot.escape .hotspot-label {
+    color: #3b2414;
+    background:
+      linear-gradient(180deg, rgba(247, 228, 191, 0.94), rgba(224, 193, 145, 0.9)),
+      linear-gradient(135deg, rgba(132, 89, 56, 0.08), rgba(255, 255, 255, 0) 48%);
+    border-color: rgba(134, 94, 56, 0.42);
+    box-shadow:
+      0 12px 24px rgba(74, 44, 22, 0.18),
+      inset 0 1px 0 rgba(255, 248, 231, 0.76),
+      inset 0 -10px 18px rgba(168, 122, 77, 0.12);
+  }
+
+  .hotspot.ruins .hotspot-label {
+    color: #f4ead7;
+    background:
+      linear-gradient(180deg, rgba(123, 106, 78, 0.92), rgba(93, 78, 56, 0.9)),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 46%);
+    border-color: rgba(220, 195, 146, 0.34);
+    box-shadow:
+      0 12px 24px rgba(45, 35, 24, 0.2),
+      inset 0 1px 0 rgba(240, 226, 198, 0.22),
+      inset 0 -10px 20px rgba(58, 47, 33, 0.16);
+  }
+
+  .hotspot.escape .hotspot-label span,
+  .hotspot.escape .hotspot-label strong {
+    color: inherit;
+    text-shadow: none;
+  }
+
+  .hotspot.ruins .hotspot-label span {
+    color: #f2e0b6;
+  }
+
+  .hotspot.future {
+    left: 2.8%;
+    top: 5.4%;
+    width: 40.2%;
+    height: 41.2%;
+  }
+
+  .hotspot.lab {
+    left: 57%;
+    top: 5.4%;
+    width: 40.2%;
+    height: 41.2%;
+    justify-content: flex-end;
+  }
+
+  .hotspot.escape {
+    left: 2.8%;
+    top: 53.4%;
+    width: 40.2%;
+    height: 41.2%;
+  }
+
+  .hotspot.ruins {
+    left: 57%;
+    top: 53.4%;
+    width: 40.2%;
+    height: 41.2%;
+    justify-content: flex-end;
+  }
+
+  .hotspot.lab .hotspot-label,
+  .hotspot.ruins .hotspot-label {
+    text-align: right;
+  }
+
+  .support-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .fallback-wrap,
+  .support-note {
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--panel);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+  }
+
+  .fallback-wrap {
+    overflow: hidden;
+  }
+
+  .fallback-summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 18px 22px;
+    font-weight: 800;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .fallback-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .fallback-summary::after {
+    content: "＋";
+    font-size: 24px;
+    line-height: 1;
+    color: #98d7ff;
+  }
+
+  .fallback-wrap[open] .fallback-summary::after {
+    content: "－";
+  }
+
+  .fallback-content {
+    padding: 0 22px 22px;
+    color: var(--muted);
+  }
+
+  .text-list,
+  .mobile-cards {
+    display: grid;
+    gap: 12px;
+  }
+
+  .text-link,
+  .card-link {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+
+  .text-link:hover,
+  .text-link:focus-visible,
+  .card-link:hover,
+  .card-link:focus-visible {
+    transform: translateY(-2px);
+    border-color: var(--line-strong);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .text-link span,
+  .card-link span {
+    display: block;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    color: #99d8ff;
+    margin-bottom: 5px;
+  }
+
+  .text-link strong,
+  .card-link strong {
+    display: block;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .support-note {
+    padding: 20px 20px 18px;
+  }
+
+  .support-note h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+  }
+
+  .support-note p {
     margin: 0;
     color: var(--muted);
-    line-height: 1.7;
+    line-height: 1.65;
+    font-size: 14px;
   }
 
-  .meta {
+  .mobile-cards {
+    display: none;
+  }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .modal.is-open {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 2px;
   }
 
-  .pill {
-    padding: 7px 10px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.08);
-    font-size: 13px;
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(3, 6, 12, 0.74);
+    backdrop-filter: blur(6px);
+  }
+
+  .modal-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(720px, 100%);
+    max-height: min(80vh, 720px);
+    overflow: auto;
+    border-radius: 28px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(9, 15, 27, 0.97), rgba(7, 12, 21, 0.98));
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.44);
+    padding: 24px;
+  }
+
+  .modal-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .modal-head h2 {
+    margin: 0;
+    font-size: clamp(26px, 3vw, 38px);
+  }
+
+  .modal-head p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .modal-close {
+    flex: 0 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 22px;
+  }
+
+  .modal-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 18px;
+  }
+
+  .modal-chip,
+  .guide-step {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 16px;
+  }
+
+  .modal-chip {
     font-weight: 800;
   }
 
-  .card .cta {
-    margin-top: auto;
-    font-weight: 900;
+  .guide-steps {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  .guide-step strong {
+    display: block;
+    margin-bottom: 6px;
     font-size: 16px;
   }
 
-  .tech { background: linear-gradient(135deg, rgba(9, 31, 68, 0.94), rgba(8, 21, 40, 0.84)); }
-  .lab { background: linear-gradient(135deg, rgba(8, 48, 65, 0.94), rgba(7, 24, 37, 0.84)); }
-  .escape { background: linear-gradient(135deg, rgba(70, 44, 23, 0.94), rgba(39, 25, 14, 0.86)); }
-  .ruins { background: linear-gradient(135deg, rgba(82, 74, 56, 0.94), rgba(48, 42, 33, 0.86)); }
+  .guide-step p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+    font-size: 14px;
+  }
 
-  @media (max-width: 860px) {
-    .tips-grid,
-    .grid {
+  @media (max-width: 980px) {
+    .scene-copy {
+      padding: 8% 10%;
+    }
+
+    .scene-copy-inner {
+      padding: 18px 20px;
+    }
+
+    .support-row {
+      grid-template-columns: 1fr;
+    }
+
+    .hotspot {
+      padding: 14px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .topbar {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .guide-trigger {
+      width: 100%;
+    }
+
+    .scene-panel {
+      display: none;
+    }
+
+    .mobile-cards {
+      display: grid;
+    }
+
+    .support-note {
+      order: -1;
+    }
+
+    .modal {
+      padding: 16px;
+    }
+
+    .modal-dialog {
+      padding: 20px 18px;
+      border-radius: 22px;
+    }
+
+    .modal-grid {
       grid-template-columns: 1fr;
     }
   }
 
-  @media (max-width: 640px) {
-    .page { padding: 22px 0 36px; }
-    .hero, .tips, .card { border-radius: 20px; }
-    .hero { padding: 22px 18px; }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+    }
   }
 </style>
 </head>
-<body>
-  <div class="page">
-    <section class="hero">
-      <div class="eyebrow">TEACHER LAUNCH PANEL</div>
-      <h1>全班最後試煉｜教師專用入口頁</h1>
-      <p>這裡是老師上課時的主控制入口。四個版本共用同一套拖曳、計時、提示、響鈴與重新開始流程，只切換視覺風格。請依班級氣氛與關卡主題，直接選擇想要的畫面版本。</p>
-      <div class="hero-actions">
-        <div class="chip">可自訂答案與提示</div>
-        <div class="chip">保留觸控拖曳</div>
-        <div class="chip">支援大屏投影</div>
-        <div class="chip">答錯不顯示正解</div>
+<body class="debug-hotspots">
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-tag">MISSION PORTAL</div>
+        <div class="brand-title">全班最後試煉｜插畫式解謎任務大廳</div>
+      </div>
+      <button type="button" class="guide-trigger" id="openGuide" aria-haspopup="dialog" aria-controls="guideModal">
+        教師操作說明
+      </button>
+    </header>
+
+    <section class="stage-shell" aria-labelledby="portalTitle">
+      <div class="scene-panel" id="scenePanel">
+        <img
+          class="scene-image"
+          id="sceneImage"
+          src="./clue-portal-map.webp"
+          alt="全班最後試煉的任務入口地圖"
+        />
+
+        <div class="scene-copy">
+          <div class="scene-copy-inner">
+            <div class="eyebrow">FINAL CLUE PORTAL</div>
+            <h1 id="portalTitle">全班最後試煉</h1>
+            <p>選擇任務入口，啟動最終解碼</p>
+          </div>
+        </div>
+
+        <div class="hotspot-layer" aria-label="四個主題入口">
+          <a
+            class="hotspot future"
+            href="./decode-mission-console.html"
+            aria-label="進入未來任務控制台"
+          >
+            <div class="hotspot-label">
+              <span>FUTURE COMMAND</span>
+              <strong>未來任務控制台</strong>
+            </div>
+          </a>
+
+          <a
+            class="hotspot lab"
+            href="./ai-lab-decode-station.html"
+            aria-label="進入 AI 實驗室解碼艙"
+          >
+            <div class="hotspot-label">
+              <span>AI LAB</span>
+              <strong>AI 實驗室解碼艙</strong>
+            </div>
+          </a>
+
+          <a
+            class="hotspot escape"
+            href="./escape-room-mission.html"
+            aria-label="進入密室逃脫解謎風"
+          >
+            <div class="hotspot-label">
+              <span>ESCAPE ROOM</span>
+              <strong>密室逃脫解謎風</strong>
+            </div>
+          </a>
+
+          <a
+            class="hotspot ruins"
+            href="./ancient-ruins-mission.html"
+            aria-label="進入考古遺跡解封風"
+          >
+            <div class="hotspot-label">
+              <span>ANCIENT RUINS</span>
+              <strong>考古遺跡解封風</strong>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <section class="mobile-cards" aria-label="手機版入口卡片">
+        <a class="card-link" href="./decode-mission-console.html" aria-label="進入未來任務控制台">
+          <span>FUTURE COMMAND</span>
+          <strong>未來任務控制台</strong>
+        </a>
+        <a class="card-link" href="./ai-lab-decode-station.html" aria-label="進入 AI 實驗室解碼艙">
+          <span>AI LAB</span>
+          <strong>AI 實驗室解碼艙</strong>
+        </a>
+        <a class="card-link" href="./escape-room-mission.html" aria-label="進入密室逃脫解謎風">
+          <span>ESCAPE ROOM</span>
+          <strong>密室逃脫解謎風</strong>
+        </a>
+        <a class="card-link" href="./ancient-ruins-mission.html" aria-label="進入考古遺跡解封風">
+          <span>ANCIENT RUINS</span>
+          <strong>考古遺跡解封風</strong>
+        </a>
+      </section>
+
+      <div class="support-row">
+        <details class="fallback-wrap">
+          <summary class="fallback-summary">無法使用圖片入口？開啟文字選單</summary>
+          <div class="fallback-content">
+            <div class="text-list">
+              <a class="text-link" href="./decode-mission-console.html" aria-label="文字選單：進入未來任務控制台">
+                <span>FUTURE COMMAND</span>
+                <strong>未來任務控制台</strong>
+              </a>
+              <a class="text-link" href="./ai-lab-decode-station.html" aria-label="文字選單：進入 AI 實驗室解碼艙">
+                <span>AI LAB</span>
+                <strong>AI 實驗室解碼艙</strong>
+              </a>
+              <a class="text-link" href="./escape-room-mission.html" aria-label="文字選單：進入密室逃脫解謎風">
+                <span>ESCAPE ROOM</span>
+                <strong>密室逃脫解謎風</strong>
+              </a>
+              <a class="text-link" href="./ancient-ruins-mission.html" aria-label="文字選單：進入考古遺跡解封風">
+                <span>ANCIENT RUINS</span>
+                <strong>考古遺跡解封風</strong>
+              </a>
+            </div>
+          </div>
+        </details>
+
+        <aside class="support-note">
+          <h2>課堂備註</h2>
+          <p>首頁只負責任務入口與教師說明，四個遊戲版本的拖曳、計時、提示、響鈴、重新開始與自訂答案流程都維持原樣，不會因首頁改版而改動。</p>
+        </aside>
       </div>
     </section>
+  </main>
 
-    <section class="tips">
-      <div class="tips-title">TEACHER QUICK GUIDE</div>
-      <div class="tips-grid">
-        <div class="tip-box">
+  <div class="modal" id="guideModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal="true"></div>
+    <section
+      class="modal-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="guideTitle"
+      aria-describedby="guideDesc"
+    >
+      <div class="modal-head">
+        <div>
+          <h2 id="guideTitle">教師操作說明</h2>
+          <p id="guideDesc">這裡保留原本首頁的重要提醒與三步驟快速指南，方便上課前快速確認。</p>
+        </div>
+        <button type="button" class="modal-close" id="closeGuide" aria-label="關閉教師操作說明">×</button>
+      </div>
+
+      <div class="modal-grid">
+        <div class="modal-chip">・可自訂答案與提示</div>
+        <div class="modal-chip">・保留觸控拖曳</div>
+        <div class="modal-chip">・支援大屏投影</div>
+        <div class="modal-chip">・答錯不顯示正解</div>
+      </div>
+
+      <div class="guide-steps">
+        <div class="guide-step">
           <strong>1. 先選風格</strong>
-          <span>依照課程主題選擇科技、AI、密室或考古遺跡版本，讓全班氛圍更一致。</span>
+          <p>依照課程主題選擇科技、AI、密室或考古遺跡版本，讓全班氛圍更一致。</p>
         </div>
-        <div class="tip-box">
+        <div class="guide-step">
           <strong>2. 再做教師設定</strong>
-          <span>進入後可以自訂答案、提示一到三、標題、副標題與獎勵內容。</span>
+          <p>進入後可以自訂答案、提示一到三、標題、副標題與獎勵內容。</p>
         </div>
-        <div class="tip-box">
+        <div class="guide-step">
           <strong>3. 上課直接投影</strong>
-          <span>每個版本都保留手動新增字母、拖曳拼字、響鈴提示與重新開始功能。</span>
+          <p>每個版本都保留手動新增字母、拖曳拼字、響鈴提示與重新開始功能。</p>
         </div>
       </div>
-    </section>
-
-    <h2 class="section-title">主題選擇</h2>
-    <p class="section-sub">四個版本都能直接使用，差別只在視覺風格。若你想營造壓迫感，建議選科技或 AI；若想帶故事感，建議選密室或考古遺跡。</p>
-
-    <section class="grid">
-      <a class="card tech" href="./decode-mission-console.html">
-        <div class="tag">FUTURE COMMAND</div>
-        <h2>未來任務控制台</h2>
-        <p>深色霓虹、任務 HUD、發光模組與高科技解碼感，適合最有壓迫感的最後試煉畫面。</p>
-        <div class="meta">
-          <div class="pill">高壓挑戰感</div>
-          <div class="pill">未來科技</div>
-          <div class="pill">任務控制台</div>
-        </div>
-        <div class="cta">開啟科技風</div>
-      </a>
-
-      <a class="card lab" href="./ai-lab-decode-station.html">
-        <div class="tag">AI LAB</div>
-        <h2>AI 實驗室解碼艙</h2>
-        <p>偏全息研究站、樣本輸入、AI 提示面板與玻璃化研究艙，像在進行最終資料解碼。</p>
-        <div class="meta">
-          <div class="pill">全息研究站</div>
-          <div class="pill">AI 氛圍</div>
-          <div class="pill">解碼艙</div>
-        </div>
-        <div class="cta">開啟 AI 實驗室風</div>
-      </a>
-
-      <a class="card escape" href="./escape-room-mission.html">
-        <div class="tag">ESCAPE ROOM</div>
-        <h2>密室逃脫解謎風</h2>
-        <p>暗木色、羊皮紙、黃銅機關與寶箱任務氛圍，像全班正在破解最後密室。</p>
-        <div class="meta">
-          <div class="pill">故事感強</div>
-          <div class="pill">寶箱任務</div>
-          <div class="pill">密室氛圍</div>
-        </div>
-        <div class="cta">開啟密室風</div>
-      </a>
-
-      <a class="card ruins" href="./ancient-ruins-mission.html">
-        <div class="tag">ANCIENT RUINS</div>
-        <h2>考古遺跡解封風</h2>
-        <p>石板、符文、古文明機關與遺跡石門，像在解讀最後一座封印遺址。</p>
-        <div class="meta">
-          <div class="pill">考古探險</div>
-          <div class="pill">符文機關</div>
-          <div class="pill">古文明解封</div>
-        </div>
-        <div class="cta">開啟考古遺跡風</div>
-      </a>
     </section>
   </div>
+
+  <script>
+    const body = document.body;
+    const scenePanel = document.getElementById("scenePanel");
+    const sceneImage = document.getElementById("sceneImage");
+    const hotspotLinks = document.querySelectorAll(".hotspot, .card-link, .text-link");
+    const modal = document.getElementById("guideModal");
+    const openGuideButton = document.getElementById("openGuide");
+    const closeGuideButton = document.getElementById("closeGuide");
+    let lastFocusedElement = null;
+
+    function markImageFallback() {
+      scenePanel.classList.add("image-failed");
+    }
+
+    if (sceneImage.complete && !sceneImage.naturalWidth) {
+      markImageFallback();
+    } else {
+      sceneImage.addEventListener("error", markImageFallback);
+    }
+
+    function addPressFeedback(link) {
+      const pressOn = () => link.classList.add("is-pressed");
+      const pressOff = () => link.classList.remove("is-pressed");
+
+      link.addEventListener("pointerdown", pressOn);
+      link.addEventListener("pointerup", pressOff);
+      link.addEventListener("pointerleave", pressOff);
+      link.addEventListener("pointercancel", pressOff);
+      link.addEventListener("blur", pressOff);
+      link.addEventListener("keyup", pressOff);
+    }
+
+    hotspotLinks.forEach(addPressFeedback);
+
+    function openGuideModal() {
+      lastFocusedElement = document.activeElement;
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      body.classList.add("modal-open");
+      closeGuideButton.focus();
+    }
+
+    function closeGuideModal() {
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      body.classList.remove("modal-open");
+      if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+        lastFocusedElement.focus();
+      }
+    }
+
+    openGuideButton.addEventListener("click", openGuideModal);
+    closeGuideButton.addEventListener("click", closeGuideModal);
+
+    modal.addEventListener("click", event => {
+      if (event.target.dataset.closeModal === "true") {
+        closeGuideModal();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && modal.classList.contains("is-open")) {
+        closeGuideModal();
+      }
+    });
+  </script>
 </body>
 </html>
