@@ -1120,6 +1120,86 @@
     border-color: rgba(139, 30, 30, 0.5);
     box-shadow: 0 30px 60px rgba(0,0,0,0.48), 0 0 24px rgba(139, 30, 30, 0.14);
   }
+
+  .side-btn.sound-toggle {
+    min-width: 110px;
+  }
+
+  .success-burst {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 40;
+    opacity: 0;
+  }
+
+  .success-burst::before,
+  .success-burst::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+
+  .success-burst::before {
+    background:
+      radial-gradient(circle at center, rgba(255, 247, 222, 0.18), transparent 16%),
+      radial-gradient(circle at center, rgba(242, 196, 95, 0.28), transparent 34%),
+      radial-gradient(circle at center, rgba(215, 155, 43, 0.2), transparent 50%);
+  }
+
+  .success-burst::after {
+    inset: 10% 12%;
+    background:
+      radial-gradient(circle at 18% 30%, rgba(255,248,229,0.88) 0 2px, transparent 3px),
+      radial-gradient(circle at 32% 68%, rgba(242,196,95,0.76) 0 2px, transparent 3px),
+      radial-gradient(circle at 50% 24%, rgba(255,236,176,0.9) 0 2px, transparent 3px),
+      radial-gradient(circle at 66% 64%, rgba(255,255,255,0.84) 0 2px, transparent 3px),
+      radial-gradient(circle at 78% 34%, rgba(216,155,43,0.78) 0 2px, transparent 3px),
+      radial-gradient(circle at 46% 82%, rgba(255,215,132,0.82) 0 2px, transparent 3px);
+  }
+
+  .success-burst.is-active::before {
+    animation: successGlow 1s ease;
+  }
+
+  .success-burst.is-active::after {
+    animation: successSpark 1s ease;
+  }
+
+  .result-card.success-pop {
+    animation: successCardPop 0.82s cubic-bezier(.2, .9, .2, 1);
+  }
+
+  @keyframes successGlow {
+    0% { opacity: 0; transform: scale(0.92); }
+    18% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.12); }
+  }
+
+  @keyframes successSpark {
+    0% { opacity: 0; transform: scale(0.86); }
+    24% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.08); }
+  }
+
+  @keyframes successCardPop {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .success-burst.is-active::before,
+    .success-burst.is-active::after,
+    .result-card.success-pop {
+      animation: none;
+    }
+
+    .success-burst.is-active::before {
+      opacity: 0.28;
+    }
+  }
 </style>
 </head>
 <body>
@@ -1144,6 +1224,7 @@
     <div class="right-tools" data-label="機關控制">
       <button class="side-btn start" id="startBtn" onclick="startGame()" disabled>啟動機關</button>
       <button class="side-btn reset" onclick="resetGame(true)">重置機關</button>
+      <button class="side-btn sound-toggle" id="soundToggleBtn" type="button" aria-label="切換答對音效">音效：開</button>
       <button class="side-btn" id="fullscreenBtn" onclick="toggleFullscreen()">進入全螢幕</button>
     </div>
   </div>
@@ -1175,6 +1256,8 @@
   </div>
 </div>
 
+<div class="success-burst" id="successBurst" aria-hidden="true"></div>
+
 <div class="result" id="result">
   <div class="result-card" id="resultCard">
     <h2 id="resultTitle">成功！</h2>
@@ -1185,8 +1268,17 @@
 </div>
 
 <script src="./clue-settings.js"></script>
+<script src="./clue-sound.js"></script>
 <script>
   const { loadSettings } = window.ClueGameSettings;
+  const {
+    initSoundSettings,
+    updateSoundToggleUI,
+    toggleSoundEnabled,
+    playSuccessSound,
+    resetSuccessSoundState,
+    triggerSuccessEffects
+  } = window.ClueGameSound;
 
   let answer = "BRAINSTORMING";
   let targetCountValue = 13;
@@ -1228,6 +1320,9 @@
   const letterCount = document.getElementById("letterCount");
   const targetCount = document.getElementById("targetCount");
   const smallNote = document.getElementById("smallNote");
+  const resultCard = document.getElementById("resultCard");
+  const successBurst = document.getElementById("successBurst");
+  const soundToggleBtn = document.getElementById("soundToggleBtn");
   const fullscreenBtn = document.getElementById("fullscreenBtn");
 
   function loadSharedSettings() {
@@ -1573,6 +1668,10 @@
       }
 
       showResult("密室開鎖成功！", prize, false);
+      const playedNow = playSuccessSound();
+      if (playedNow) {
+        triggerSuccessEffects({ body: document.body, resultCard, successBurst });
+      }
     } else {
       showResult("機關尚未解開！", "字母序列尚未通過機關驗證，請重新排列。", true);
     }
@@ -1642,6 +1741,7 @@
     rung180 = false;
     rung300 = false;
     addedHistory = [];
+    resetSuccessSoundState();
 
     updateTimer();
     letterBank.innerHTML = "";
@@ -1669,10 +1769,15 @@
   letterInput.addEventListener("keydown", event => {
     if (event.key === "Enter") addLetter();
   });
+  soundToggleBtn.addEventListener("click", () => {
+    toggleSoundEnabled(soundToggleBtn);
+  });
 
   document.addEventListener("fullscreenchange", updateFullscreenButton);
   document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
 
+  initSoundSettings();
+  updateSoundToggleUI(soundToggleBtn);
   loadSharedSettings();
   createSlots();
   updateFullscreenButton();
