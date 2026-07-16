@@ -535,6 +535,50 @@
     cursor: grabbing;
   }
 
+  .sealed-card {
+    width: clamp(62px, 6.4vw, 94px);
+    height: clamp(62px, 6.4vw, 94px);
+    position: relative;
+    border-radius: 20px;
+    border: 1px solid rgba(100, 242, 255, 0.36);
+    background:
+      linear-gradient(145deg, rgba(7, 28, 47, 0.96), rgba(18, 58, 92, 0.84) 62%, rgba(125, 255, 178, 0.18)),
+      linear-gradient(145deg, rgba(159, 109, 255, 0.14), rgba(55, 164, 255, 0.12));
+    color: #f5fdff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    user-select: none;
+    box-shadow:
+      0 14px 24px rgba(0, 0, 0, 0.28),
+      inset 0 0 18px rgba(100, 242, 255, 0.12),
+      0 0 18px rgba(55, 164, 255, 0.14);
+  }
+
+  .sealed-card::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border-radius: 14px;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    pointer-events: none;
+  }
+
+  .sealed-symbol {
+    font-size: clamp(26px, 3vw, 40px);
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .sealed-text {
+    font-size: clamp(10px, 1.1vw, 13px);
+    letter-spacing: 1.2px;
+    font-weight: 800;
+    color: rgba(245, 253, 255, 0.86);
+  }
+
   .main-controls {
     display: flex;
     justify-content: center;
@@ -1162,6 +1206,7 @@
     updateSoundToggleUI,
     toggleSoundEnabled,
     playSuccessSound,
+    playErrorSound,
     resetSuccessSoundState,
     triggerSuccessEffects
   } = window.ClueGameSound;
@@ -1182,6 +1227,8 @@
   let hint3Time = 300;
 
   let addedHistory = [];
+  let clueBankRevealed = false;
+  let clueInspectionInProgress = false;
 
   let startTime = null;
   let timerInterval = null;
@@ -1229,9 +1276,71 @@
     mainTitle.textContent = settings.title;
     mainSubtitle.textContent = settings.subtitle;
     targetCount.textContent = targetCountValue;
-    smallNote.textContent = `老師每收到一個字母，就在左上方輸入並新增。收集 ${targetCountValue} 個字母後才能開始計時；${Math.floor(hint1Time / 60)}:${String(hint1Time % 60).padStart(2, "0")}、${Math.floor(hint2Time / 60)}:${String(hint2Time % 60).padStart(2, "0")}、${Math.floor(hint3Time / 60)}:${String(hint3Time % 60).padStart(2, "0")} 會播放醒目音效並開放提示。`;
+    smallNote.textContent = `請先收集字母。投入後會先封存，不會立刻顯示字母。收集滿 ${targetCountValue} 個後，系統會檢測並隨機展開正確線索；${Math.floor(hint1Time / 60)}:${String(hint1Time % 60).padStart(2, "0")}、${Math.floor(hint2Time / 60)}:${String(hint2Time % 60).padStart(2, "0")}、${Math.floor(hint3Time / 60)}:${String(hint3Time % 60).padStart(2, "0")} 會播放醒目音效並開放提示。`;
     setPrizeTier(`挑戰獎勵：${prize1}`, "tier1");
-    hintBox.textContent = `請先收集 ${targetCountValue} 個字母。目前已收集 0/${targetCountValue}。`;
+    hintBox.textContent = `請先收集字母。投入後會先封存，不會立刻顯示字母。目前已收集 0/${targetCountValue}。`;
+  }
+
+  function shuffleLetters(letters) {
+    const shuffled = [...letters];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  function hasMatchingLetterInventory(rawLetters, expectedLetters) {
+    if (rawLetters.length !== expectedLetters.length) return false;
+    return [...rawLetters].sort().join("") === [...expectedLetters].sort().join("");
+  }
+
+  function createLetterCard(letter) {
+    const el = document.createElement("div");
+    el.className = "letter";
+    el.textContent = letter;
+    el.draggable = true;
+    el.id = `letter-${Date.now()}-${Math.random().toString(36).slice(2)}-${letter}`;
+    addDragEvents(el);
+    return el;
+  }
+
+  function renderSealedCards() {
+    letterBank.innerHTML = "";
+    for (let i = 0; i < addedHistory.length; i++) {
+      const seal = document.createElement("div");
+      seal.className = "sealed-card";
+      seal.innerHTML = '<div class="sealed-symbol">?</div><div class="sealed-text">已封存</div>';
+      letterBank.appendChild(seal);
+    }
+  }
+
+  function revealCorrectLetters(corrected) {
+    clueInspectionInProgress = false;
+    clueBankRevealed = true;
+    addedHistory = answer.split("").map(letter => ({ letter }));
+    letterBank.innerHTML = "";
+    shuffleLetters(answer.split("")).forEach(letter => letterBank.appendChild(createLetterCard(letter)));
+    hintBox.textContent = corrected
+      ? "系統檢測完成：已自動修正字母庫，正確線索隨機展開。"
+      : "系統檢測完成：線索字母已隨機展開。";
+    flashHint();
+    setTimeout(() => {
+      if (!timerInterval) {
+        hintBox.textContent = "正確線索已展開，請啟動最後試煉。";
+      }
+    }, 1200);
+    refreshTeacherControls();
+  }
+
+  function inspectClueBank() {
+    if (clueInspectionInProgress || clueBankRevealed || addedHistory.length !== targetCountValue) return;
+    clueInspectionInProgress = true;
+    hintBox.textContent = "線索已全數封存，正在進行系統檢測……";
+    flashHint();
+    refreshTeacherControls();
+    const matches = hasMatchingLetterInventory(addedHistory.map(item => item.letter), answer.split(""));
+    setTimeout(() => revealCorrectLetters(!matches), 520);
   }
 
   function createSlots() {
@@ -1251,18 +1360,39 @@
     letterCount.textContent = addedHistory.length;
     targetCount.textContent = targetCountValue;
 
-    const locked = timerInterval !== null || addedHistory.length >= targetCountValue;
-    letterInput.disabled = locked;
-    addBtn.disabled = locked;
-    undoBtn.disabled = addedHistory.length === 0 || timerInterval !== null;
+    if (timerInterval !== null) {
+      letterInput.disabled = true;
+      addBtn.disabled = true;
+      undoBtn.disabled = true;
+      startBtn.disabled = true;
+      return;
+    }
+
+    if (clueInspectionInProgress) {
+      letterInput.disabled = true;
+      addBtn.disabled = true;
+      undoBtn.disabled = true;
+      startBtn.disabled = true;
+      return;
+    }
+
+    if (clueBankRevealed) {
+      letterInput.disabled = true;
+      addBtn.disabled = true;
+      undoBtn.disabled = true;
+      startBtn.disabled = false;
+      return;
+    }
+
+    letterInput.disabled = addedHistory.length >= targetCountValue;
+    addBtn.disabled = addedHistory.length >= targetCountValue;
+    undoBtn.disabled = addedHistory.length === 0;
+    startBtn.disabled = true;
 
     if (addedHistory.length === targetCountValue) {
-      startBtn.disabled = false;
-      hintBox.textContent = `${targetCountValue} 個字母已集合！請按「開始計時」，最後試煉即將開始。`;
-      flashHint();
+      inspectClueBank();
     } else {
-      startBtn.disabled = true;
-      hintBox.textContent = `請先收集 ${targetCountValue} 個字母。目前已收集 ${addedHistory.length}/${targetCountValue}。`;
+      hintBox.textContent = `請先收集字母。投入後會先封存，不會立刻顯示字母。目前已收集 ${addedHistory.length}/${targetCountValue}。`;
     }
   }
 
@@ -1278,30 +1408,19 @@
     }
 
     const letter = raw.toUpperCase();
-    const letterId = `letter-${Date.now()}-${Math.random().toString(36).slice(2)}-${letter}`;
-
-    const el = document.createElement("div");
-    el.className = "letter";
-    el.textContent = letter;
-    el.draggable = true;
-    el.id = letterId;
-    addDragEvents(el);
-    letterBank.appendChild(el);
-
-    addedHistory.push({ letter, id: letterId });
+    addedHistory.push({ letter });
     letterInput.value = "";
     letterInput.focus();
+    renderSealedCards();
     playAddSound();
     refreshTeacherControls();
   }
 
   function undoLetter() {
-    if (addedHistory.length === 0 || timerInterval !== null) return;
+    if (addedHistory.length === 0 || timerInterval !== null || clueInspectionInProgress || clueBankRevealed) return;
 
-    const last = addedHistory.pop();
-    const el = document.getElementById(last.id);
-    if (el) el.remove();
-
+    addedHistory.pop();
+    renderSealedCards();
     refreshTeacherControls();
   }
 
@@ -1473,7 +1592,7 @@
   }
 
   function startGame() {
-    if (timerInterval || addedHistory.length < targetCountValue) return;
+    if (timerInterval || addedHistory.length < targetCountValue || !clueBankRevealed) return;
 
     initAudio();
     startTime = Date.now() - elapsedSeconds * 1000;
@@ -1535,6 +1654,11 @@
       return;
     }
 
+    if (!clueBankRevealed) {
+      showResult("線索尚未展開！", "請先等待系統檢測完成，讓正確線索隨機展開後再開始作答。", true);
+      return;
+    }
+
     const current = getCurrentAnswer();
 
     if (current === answer) {
@@ -1564,6 +1688,10 @@
   }
 
   function showResult(title, text, isWrong) {
+    if (isWrong) {
+      playErrorSound();
+    }
+
     const answerEl = document.getElementById("resultAnswer");
     document.getElementById("resultTitle").textContent = title;
     document.getElementById("resultText").textContent = text;
@@ -1627,6 +1755,8 @@
     rung180 = false;
     rung300 = false;
     addedHistory = [];
+    clueBankRevealed = false;
+    clueInspectionInProgress = false;
     resetSuccessSoundState();
 
     updateTimer();
@@ -1644,10 +1774,11 @@
     undoBtn.disabled = true;
     letterInput.disabled = false;
     letterInput.value = "";
+    renderSealedCards();
     refreshTeacherControls();
 
     if (showHint) {
-      hintBox.textContent = `已重新開始！請先收集 ${targetCountValue} 個字母。目前已收集 0/${targetCountValue}。`;
+      hintBox.textContent = `已重新開始！請先收集字母。投入後會先封存，不會立刻顯示字母。目前已收集 0/${targetCountValue}。`;
       flashHint();
     }
   }

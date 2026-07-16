@@ -1,9 +1,11 @@
 (function () {
   const SOUND_STORAGE_KEY = "clueGameSoundEnabled";
   const SUCCESS_SOUND_PATH = "./assets/audio/success.mp3";
+  const ERROR_SOUND_PATH = "./assets/audio/universfield-computer-error-149908.mp3";
   let soundEnabled = true;
   let successSoundPlayed = false;
   let successAudio = null;
+  let errorAudio = null;
 
   function initSoundSettings() {
     try {
@@ -27,7 +29,7 @@
   function updateSoundToggleUI(button) {
     if (!button) return;
     button.textContent = `音效：${soundEnabled ? "開" : "關"}`;
-    button.setAttribute("aria-label", soundEnabled ? "關閉答對音效" : "開啟答對音效");
+    button.setAttribute("aria-label", soundEnabled ? "關閉遊戲音效" : "開啟遊戲音效");
     button.setAttribute("aria-pressed", soundEnabled ? "true" : "false");
   }
 
@@ -62,6 +64,32 @@
       return true;
     } catch (error) {
       console.warn("Success sound unavailable", error);
+      return false;
+    }
+  }
+
+  function playErrorSound() {
+    if (!soundEnabled) return false;
+
+    try {
+      if (!errorAudio) {
+        errorAudio = new Audio(ERROR_SOUND_PATH);
+        errorAudio.preload = "auto";
+      }
+
+      errorAudio.pause();
+      errorAudio.currentTime = 0;
+      errorAudio.volume = 0.72;
+
+      const playPromise = errorAudio.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(error => {
+          console.warn("Error sound unavailable", error);
+        });
+      }
+      return true;
+    } catch (error) {
+      console.warn("Error sound unavailable", error);
       return false;
     }
   }
@@ -109,10 +137,12 @@
   window.ClueGameSound = {
     SOUND_STORAGE_KEY,
     SUCCESS_SOUND_PATH,
+    ERROR_SOUND_PATH,
     initSoundSettings,
     updateSoundToggleUI,
     toggleSoundEnabled,
     playSuccessSound,
+    playErrorSound,
     resetSuccessSoundState,
     triggerSuccessEffects
   };

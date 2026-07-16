@@ -1,5 +1,20 @@
 (function () {
   const STORAGE_KEY = "clueGameSettings";
+  const SHARE_PARAM_KEYS = [
+    "title",
+    "subtitle",
+    "answer",
+    "hint1",
+    "hint2",
+    "hint3",
+    "prize1",
+    "prize2",
+    "prize3",
+    "overtimeText",
+    "hint1Time",
+    "hint2Time",
+    "hint3Time"
+  ];
 
   const defaults = {
     title: "全班最後試煉",
@@ -54,6 +69,11 @@
   }
 
   function loadSettings() {
+    const sharedSettings = loadSettingsFromQuery();
+    if (sharedSettings) {
+      return saveSettings(sharedSettings);
+    }
+
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       return raw ? normalizeSettings(JSON.parse(raw)) : normalizeSettings(defaults);
@@ -71,6 +91,39 @@
       console.warn("Failed to save clueGameSettings", error);
     }
     return normalized;
+  }
+
+  function loadSettingsFromQuery() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const hasSharedSetting = SHARE_PARAM_KEYS.some(key => params.has(key));
+      if (!hasSharedSetting) return null;
+
+      const imported = {};
+      SHARE_PARAM_KEYS.forEach(key => {
+        if (params.has(key)) {
+          imported[key] = params.get(key);
+        }
+      });
+      return normalizeSettings(imported);
+    } catch (error) {
+      console.warn("Failed to read shared clue settings", error);
+      return null;
+    }
+  }
+
+  function buildShareUrl(settings, targetPath) {
+    const normalized = normalizeSettings(settings);
+    const targetUrl = new URL(targetPath || window.location.pathname, window.location.href);
+    targetUrl.search = "";
+    targetUrl.hash = "";
+
+    const params = new URLSearchParams();
+    SHARE_PARAM_KEYS.forEach(key => {
+      params.set(key, normalized[key]);
+    });
+    targetUrl.search = params.toString();
+    return targetUrl.toString();
   }
 
   function resetSettings() {
@@ -105,12 +158,14 @@
 
   window.ClueGameSettings = {
     STORAGE_KEY,
+    SHARE_PARAM_KEYS,
     defaults: normalizeSettings(defaults),
     normalizeAnswer,
     normalizeSettings,
     loadSettings,
     saveSettings,
     resetSettings,
+    buildShareUrl,
     formatSeconds,
     parseTimeInput
   };

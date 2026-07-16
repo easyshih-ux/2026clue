@@ -217,6 +217,33 @@
     color: var(--accent-2);
   }
 
+  .share-panel {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid rgba(146, 225, 255, 0.18);
+    border-radius: 20px;
+    background: rgba(5, 13, 24, 0.48);
+  }
+
+  .share-panel label {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .share-output {
+    min-height: 76px;
+    font-size: 13px;
+    line-height: 1.55;
+    resize: vertical;
+  }
+
+  .share-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
   .launch-grid {
     margin-top: 18px;
     display: grid;
@@ -310,7 +337,7 @@
       <div>
         <div class="eyebrow">TEACHER ADMIN</div>
         <h1>全班最後試煉｜教師設定頁</h1>
-        <p>這一頁專門管理題目、提示、獎勵與時間門檻。儲存後，首頁與四個風格版本會讀取同一份設定，學生端不會再看到設定面板。</p>
+        <p>這一頁專門管理題目、提示、獎勵與時間門檻。儲存後，首頁與四個風格版本會讀取同一份設定，學生端不會再看到設定面板。四個版本現在都會先封存字母，收滿後才檢測並隨機展開正確線索。</p>
         <ul>
           <li>建議先在這裡完成設定，再從首頁或下方入口開啟學生畫面。</li>
           <li>這是課堂防誤觸用途，不是登入系統，請不要放真正機密資料。</li>
@@ -326,10 +353,11 @@
       <div class="section-head">
         <div>
           <h2>任務內容設定</h2>
-          <p>答案會自動轉為大寫英文，字母數會依答案自動更新。</p>
+          <p>答案會自動轉為大寫英文，字母數會依答案自動更新；學生端收滿後會用這個答案作為最終展開字母庫。</p>
         </div>
         <div class="action-row">
           <button class="button primary" type="button" id="saveBtn">儲存設定</button>
+          <button class="button" type="button" id="shareBtn">產生分享連結</button>
           <button class="button" type="button" id="loadBtn">重新讀取目前設定</button>
           <button class="button danger" type="button" id="resetBtn">重設為預設值</button>
         </div>
@@ -350,7 +378,7 @@
           <div class="field full">
             <label for="answerInput">正確答案</label>
             <input id="answerInput" name="answer" autocomplete="off" />
-            <div class="field-note">系統會自動過濾成 A-Z，並同步更新字母數。</div>
+            <div class="field-note">系統會自動過濾成 A-Z，並同步更新字母數。學生端收滿字母後，會檢測老師投入內容，並以這組正確答案隨機展開。</div>
           </div>
 
           <div class="field">
@@ -410,6 +438,16 @@
         </div>
       </form>
 
+      <div class="share-panel" aria-live="polite">
+        <label for="shareUrlOutput">分享連結</label>
+        <textarea class="share-output" id="shareUrlOutput" readonly placeholder="按下「產生分享連結」後，這裡會出現可分享的學生首頁網址。"></textarea>
+        <div class="share-actions">
+          <button class="button" type="button" id="copyShareBtn">複製分享連結</button>
+          <a class="button" id="openShareLink" href="./index.html" target="_blank" rel="noopener">開啟分享連結</a>
+        </div>
+        <div class="field-note">連結會把目前答案、提示、副標題、獎勵與時間門檻寫入網址參數；其他電腦打開後會自動套用，不需要資料庫。</div>
+      </div>
+
       <div class="status" id="statusText" aria-live="polite"></div>
     </section>
 
@@ -425,6 +463,8 @@
           <li>先在這頁儲存設定。</li>
           <li>再開 <a href="./index.html">學生首頁</a> 檢查學生端是否只剩入口與說明。</li>
           <li>開任一風格版本，確認標題、提示與獎勵已同步。</li>
+          <li>老師逐字投入時，學生應只看到封存卡，不會先看到真字母。</li>
+          <li>收滿字母後，系統應先檢測，再隨機展開正確字母，之後才能啟動遊戲。</li>
           <li>若是從 PPT 超連結開啟首頁，學生就看不到設定欄位。</li>
         </ol>
       </div>
@@ -462,6 +502,7 @@
       resetSettings,
       normalizeAnswer,
       normalizeSettings,
+      buildShareUrl,
       formatSeconds,
       parseTimeInput
     } = window.ClueGameSettings;
@@ -471,6 +512,8 @@
     const previewJson = document.getElementById("previewJson");
     const letterCountValue = document.getElementById("letterCountValue");
     const answerInput = document.getElementById("answerInput");
+    const shareUrlOutput = document.getElementById("shareUrlOutput");
+    const openShareLink = document.getElementById("openShareLink");
     const saveButtons = [document.getElementById("saveBtn"), document.getElementById("saveTopBtn")];
 
     function formElements() {
@@ -564,6 +607,43 @@
       showStatus("教師設定已儲存，四個風格版本會讀取同一份內容。", false);
     }
 
+    function handleGenerateShareLink() {
+      const normalizedAnswer = normalizeAnswer(answerInput.value);
+      if (normalizedAnswer.length < 2) {
+        showStatus("請先輸入至少 2 個英文字母，再產生分享連結。", true);
+        answerInput.focus();
+        return;
+      }
+
+      const saved = saveSettings(readForm());
+      fillForm(saved);
+      const shareUrl = buildShareUrl(saved, "./index.html");
+      shareUrlOutput.value = shareUrl;
+      openShareLink.href = shareUrl;
+      showStatus("分享連結已產生，也已同步儲存目前設定。", false);
+    }
+
+    async function handleCopyShareLink() {
+      if (!shareUrlOutput.value) {
+        handleGenerateShareLink();
+      }
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(shareUrlOutput.value);
+        } else {
+          shareUrlOutput.select();
+          document.execCommand("copy");
+        }
+        showStatus("分享連結已複製。", false);
+      } catch (error) {
+        console.warn("Failed to copy share link", error);
+        shareUrlOutput.focus();
+        shareUrlOutput.select();
+        showStatus("無法自動複製，請手動選取分享連結。", true);
+      }
+    }
+
     function handleReset() {
       const restored = resetSettings();
       fillForm(restored);
@@ -582,6 +662,8 @@
     });
 
     saveButtons.forEach(button => button.addEventListener("click", handleSave));
+    document.getElementById("shareBtn").addEventListener("click", handleGenerateShareLink);
+    document.getElementById("copyShareBtn").addEventListener("click", handleCopyShareLink);
     document.getElementById("loadBtn").addEventListener("click", () => {
       fillForm(loadSettings());
       showStatus("已重新載入目前儲存的教師設定。", false);

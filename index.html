@@ -872,7 +872,12 @@
     </section>
   </div>
 
+  <script src="./clue-settings.js"></script>
   <script>
+    if (window.ClueGameSettings) {
+      window.ClueGameSettings.loadSettings();
+    }
+
     const body = document.body;
     const scenePanel = document.getElementById("scenePanel");
     const sceneImage = document.getElementById("sceneImage");
